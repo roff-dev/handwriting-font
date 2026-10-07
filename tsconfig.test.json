@@ -23,13 +23,15 @@
     "isolatedModules": true,
     "allowImportingTsExtensions": true,
     "noEmit": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "resolveJsonModule": true
   },
   "include": [
     "tests/unit",
     "tests/fixtures",
     "tests/types",
     "src/core",
-    "src/types"
+    "src/types",
+    "tests/bench"
   ]
 }
