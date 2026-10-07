@@ -8,6 +8,7 @@
   --proof: #b3341c;
   --guide: #8c8473;
   --ink-wet: #1f2a4d;
+  --shadow: 26 25 23;
 
   --font-display: 'Instrument Serif', 'Iowan Old Style', Georgia, serif;
   --font-text: 'Bricolage Grotesque Variable', ui-sans-serif, system-ui, sans-serif;
@@ -46,6 +47,7 @@
     --proof: #ff7a5c;
     --guide: #8a8274;
     --ink-wet: #c9d4f5;
+    --shadow: 0 0 0;
   }
 }
 
@@ -59,4 +61,5 @@
   --proof: #ff7a5c;
   --guide: #8a8274;
   --ink-wet: #c9d4f5;
+  --shadow: 0 0 0;
 }
