@@ -1,0 +1,62 @@
+:root {
+  color-scheme: light;
+  --paper: #f4efe6;
+  --sheet: #fbf9f4;
+  --paper-deep: #e9e2d4;
+  --ink: #1a1917;
+  --ink-soft: #57524a;
+  --proof: #b3341c;
+  --guide: #8c8473;
+  --ink-wet: #1f2a4d;
+
+  --font-display: 'Instrument Serif', 'Iowan Old Style', Georgia, serif;
+  --font-text: 'Bricolage Grotesque Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'Martian Mono Variable', ui-monospace, 'Cascadia Mono', monospace;
+
+  --text-display: clamp(3rem, 8vw + 1rem, 9.5rem);
+  --text-h2: clamp(1.75rem, 3vw + 1rem, 3rem);
+  --text-body: 1.0625rem;
+  --text-label: 0.75rem;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 72px;
+  --space-9: 120px;
+
+  --radius: 14px;
+  --radius-pill: 999px;
+
+  --spring-ui: 420 34;
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+    --paper: #151412;
+    --sheet: #1d1b18;
+    --paper-deep: #25221e;
+    --ink: #efe9dd;
+    --ink-soft: #b5ad9f;
+    --proof: #ff7a5c;
+    --guide: #8a8274;
+    --ink-wet: #c9d4f5;
+  }
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --paper: #151412;
+  --sheet: #1d1b18;
+  --paper-deep: #25221e;
+  --ink: #efe9dd;
+  --ink-soft: #b5ad9f;
+  --proof: #ff7a5c;
+  --guide: #8a8274;
+  --ink-wet: #c9d4f5;
+}
