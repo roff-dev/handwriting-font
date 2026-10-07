@@ -26,7 +26,10 @@
     "skipLibCheck": true
   },
   "include": [
-    "tests/unit", "tests/fixtures",
-    "src/core"
+    "tests/unit",
+    "tests/fixtures",
+    "tests/types",
+    "src/core",
+    "src/types"
   ]
 }
