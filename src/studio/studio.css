@@ -1,15 +1,312 @@
 .studio {
+  --bar-height: 56px;
+  --tabs-height: 64px;
   min-height: 100dvh;
-  padding: max(var(--space-4), env(safe-area-inset-top)) max(var(--space-4), env(safe-area-inset-right)) max(var(--space-4), env(safe-area-inset-bottom)) max(var(--space-4), env(safe-area-inset-left));
+  background: var(--paper);
+}
+
+.studio__bar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: var(--bar-height);
+  padding: env(safe-area-inset-top) max(var(--space-4), env(safe-area-inset-right)) 0 max(var(--space-4), env(safe-area-inset-left));
+  background: color-mix(in srgb, var(--paper) 92%, transparent);
+  backdrop-filter: blur(8px);
+}
+
+.studio__home {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  text-decoration: none;
+}
+
+.studio__progress {
+  margin: 0 0 0 auto;
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-soft);
+}
+
+.studio__banner {
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  background: var(--paper-deep);
+  color: var(--ink);
+  font-size: 0.9rem;
+}
+
+.studio__main {
+  padding: var(--space-3) max(var(--space-4), env(safe-area-inset-right)) calc(var(--tabs-height) + var(--space-5) + env(safe-area-inset-bottom)) max(var(--space-4), env(safe-area-inset-left));
+}
+
+.studio__tabs {
+  display: flex;
+  gap: var(--space-1);
+}
+
+.studio__tabs button {
+  min-height: 44px;
+  padding: 0 var(--space-4);
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--ink-soft);
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.studio__tabs button[aria-selected='true'] {
+  background: var(--ink);
+  color: var(--sheet);
+}
+
+.studio__tabs--top {
+  display: none;
+}
+
+.studio__tabs--bottom {
+  position: fixed;
+  inset: auto 0 0;
+  z-index: 10;
+  justify-content: center;
+  padding: var(--space-2) var(--space-4) max(var(--space-2), env(safe-area-inset-bottom));
   background: var(--paper-deep);
 }
 
-.studio__prompt {
-  margin: 0 0 var(--space-3);
-  font-size: 1.25rem;
+.studio__tabs--bottom button {
+  flex: 1;
+  max-width: 160px;
 }
 
-.studio__pad {
-  width: min(100%, 62dvh, 560px);
-  margin-inline: auto;
+.studio__toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(var(--tabs-height) + var(--space-4) + env(safe-area-inset-bottom));
+  z-index: 30;
+  translate: -50% 0;
+  max-width: calc(100vw - 32px);
+  pointer-events: none;
+}
+
+.studio__toast:not(:empty) {
+  padding: var(--space-3) var(--space-5);
+  border-radius: var(--radius-pill);
+  background: var(--ink);
+  color: var(--sheet);
+  animation: toast-in 0.35s var(--ease-out);
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    translate: -50% 12px;
+  }
+}
+
+/* Phones on their side are short: the tabs move up into the bar so the pad gets the height. */
+@media (orientation: landscape) and (max-height: 520px) {
+  .studio__tabs--top {
+    display: flex;
+    margin-left: var(--space-4);
+  }
+
+  .studio__tabs--bottom {
+    display: none;
+  }
+
+  .studio__main {
+    padding-bottom: max(var(--space-4), env(safe-area-inset-bottom));
+  }
+
+  .studio__toast {
+    bottom: var(--space-4);
+  }
+}
+
+@media (min-width: 1100px) {
+  .studio__tabs--top {
+    display: flex;
+    margin-left: var(--space-6);
+  }
+
+  .studio__tabs--bottom {
+    display: none;
+  }
+
+  .studio__main {
+    padding: var(--space-6) var(--space-7) var(--space-7);
+  }
+
+  .studio__toast {
+    bottom: var(--space-6);
+  }
+}
+
+/* The More sheet: a bottom sheet on phones, a side panel on wide screens. */
+.sheet {
+  width: 100%;
+  max-width: 100%;
+  max-height: 85dvh;
+  margin: auto 0 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius) var(--radius) 0 0;
+  background: var(--sheet);
+  color: var(--ink);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.sheet::backdrop {
+  background: rgb(var(--shadow) / 0.35);
+}
+
+.sheet[open] {
+  animation: sheet-in 0.32s var(--ease-out);
+}
+
+@keyframes sheet-in {
+  from {
+    translate: 0 40px;
+    opacity: 0;
+  }
+}
+
+.sheet__body {
+  display: grid;
+  gap: var(--space-5);
+  padding: var(--space-5) var(--space-4) max(var(--space-5), env(safe-area-inset-bottom));
+}
+
+.sheet__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sheet__head h2 {
+  font-family: var(--font-display);
+  font-size: 1.9rem;
+}
+
+.sheet__options {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.option {
+  display: grid;
+  grid-template-columns: 24px 1fr;
+  gap: var(--space-3);
+  padding: var(--space-3) 0;
+  cursor: pointer;
+}
+
+.option input,
+.sheet__theme input {
+  width: 20px;
+  height: 20px;
+  margin: 2px 0 0;
+  accent-color: var(--ink);
+}
+
+.option__title {
+  display: block;
+  font-weight: 600;
+}
+
+.option__detail {
+  display: block;
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+}
+
+.sheet fieldset {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.sheet legend {
+  margin-bottom: var(--space-2);
+  font-weight: 600;
+}
+
+.sheet__pair-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.sheet select {
+  min-height: 44px;
+  min-width: 4.5rem;
+  padding: 0 var(--space-3);
+  border: 1px solid color-mix(in srgb, var(--ink) 22%, transparent);
+  border-radius: 10px;
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  font-size: 1.1rem;
+}
+
+.sheet__error {
+  min-height: 1.4em;
+  margin: var(--space-2) 0 0;
+  color: var(--proof);
+  font-size: 0.9rem;
+}
+
+.sheet__note {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+}
+
+.sheet__theme {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-5);
+}
+
+.sheet__theme label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 44px;
+}
+
+@media (min-width: 700px) {
+  .sheet {
+    width: 440px;
+    max-height: 100dvh;
+    height: 100dvh;
+    margin: 0 0 0 auto;
+    border-radius: var(--radius) 0 0 var(--radius);
+  }
+
+  @keyframes sheet-in {
+    from {
+      translate: 40px 0;
+      opacity: 0;
+    }
+  }
+
+  .sheet__body {
+    padding: var(--space-6);
+  }
 }

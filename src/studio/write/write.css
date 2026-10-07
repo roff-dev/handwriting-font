@@ -1,0 +1,168 @@
+.write {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    'prompt'
+    'pad'
+    'actions'
+    'nudge'
+    'finger'
+    'grid';
+  align-content: start;
+  justify-items: center;
+  row-gap: var(--space-3);
+}
+
+.write > * {
+  width: 100%;
+  max-width: 560px;
+}
+
+.write__prompt {
+  grid-area: prompt;
+  min-height: 3.6em;
+}
+
+.write__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 4vw + 1rem, 2.4rem);
+  line-height: 1.05;
+  text-wrap: balance;
+}
+
+.write__hint {
+  margin: var(--space-1) 0 0;
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+}
+
+.write__choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+
+.write__pad {
+  grid-area: pad;
+  width: min(100%, 62dvh);
+}
+
+.write--wide .write__pad {
+  width: 100%;
+}
+
+.write__actions {
+  grid-area: actions;
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.write__next {
+  margin-left: auto;
+  min-width: 7.5rem;
+}
+
+.write__nudge {
+  grid-area: nudge;
+  margin: 0;
+  min-height: 1.4em;
+  color: var(--proof);
+  font-size: 0.9rem;
+}
+
+.write__finger {
+  grid-area: finger;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  color: var(--ink-soft);
+}
+
+.write__finger input {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--ink);
+}
+
+.write__grid {
+  grid-area: grid;
+  max-width: none;
+}
+
+.flight {
+  position: fixed;
+  z-index: 20;
+  transform-origin: 0 0;
+  pointer-events: none;
+  fill: var(--ink);
+}
+
+.cell[data-landing] > * {
+  visibility: hidden;
+}
+
+/* Phone on its side: the pad takes the height on the left, everything else stacks beside it. */
+@media (orientation: landscape) and (max-height: 520px) {
+  .write {
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas:
+      'pad prompt'
+      'pad actions'
+      'pad nudge'
+      'pad finger'
+      'pad grid';
+    column-gap: var(--space-5);
+    justify-items: stretch;
+  }
+
+  .write__pad {
+    width: calc(100dvh - var(--bar-height) - 2rem);
+  }
+
+  .write--wide .write__pad {
+    width: min(60vw, calc((100dvh - var(--bar-height) - 2rem) * 1.6));
+  }
+
+  .write__title {
+    font-size: 1.5rem;
+  }
+}
+
+@media (min-width: 1100px) {
+  .write {
+    grid-template-columns: 320px minmax(0, 560px) minmax(0, 1fr);
+    grid-template-areas:
+      'grid prompt .'
+      'grid pad .'
+      'grid actions .'
+      'grid nudge .'
+      'grid finger .';
+    column-gap: var(--space-8);
+    justify-items: stretch;
+    align-items: start;
+  }
+
+  .write__grid {
+    grid-row: 1 / span 6;
+    align-self: stretch;
+    max-height: calc(100dvh - 120px);
+    overflow-y: auto;
+    padding-right: var(--space-3);
+  }
+
+  .write__pad {
+    width: 100%;
+  }
+
+  .write--wide {
+    grid-template-columns: 320px minmax(0, 840px) minmax(0, 1fr);
+  }
+
+  .write--wide > :not(.write__grid) {
+    max-width: 840px;
+  }
+}

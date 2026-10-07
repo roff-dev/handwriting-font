@@ -34,7 +34,7 @@ export function usePointerInk(target: React.RefObject<HTMLElement | null>, optio
     const sample = (e: PointerEvent, rect: DOMRect, t0: number, into: number[]) => {
       const [x, y] = toFontUnits(opts.current.box, rect.width, e.clientX - rect.left, e.clientY - rect.top);
       const pressure = e.pointerType === 'pen' ? e.pressure : 0.5;
-      into.push(x, y, pressure, e.timeStamp - t0);
+      into.push(x, y, pressure, Math.round(e.timeStamp - t0));
     };
 
     const down = (e: PointerEvent) => {

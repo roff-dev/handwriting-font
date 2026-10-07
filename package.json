@@ -20,10 +20,13 @@
     "comlink": "4.4.2",
     "fflate": "0.8.3",
     "fit-curve": "0.2.0",
+    "idb-keyval": "6.3.0",
+    "motion": "14.0.0",
     "opentype.js": "2.0.0",
     "perfect-freehand": "1.2.3",
     "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "react-dom": "19.3.0",
+    "zustand": "5.0.15"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

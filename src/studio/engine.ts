@@ -1,0 +1,36 @@
+import type { Project } from '../core/project/schema';
+import { GlyphPool } from '../workers/pool';
+import { sequence, slotKey, type Slot } from './slots';
+import { useStudio } from './store';
+
+let pool: GlyphPool | undefined;
+/** What each slot's outline was last requested for, so stale results are dropped. */
+const requested = new Map<string, string>();
+
+function sync(project: Project) {
+  pool ??= new GlyphPool();
+  const { pen, weight } = project.settings;
+  const order = new Map(sequence(project).map((s, i) => [slotKey(s), i]));
+  const want = (slot: Slot, variant: Project['pairs'][string] | Project['glyphs'][string][number]) => {
+    const key = slotKey(slot), signature = `${variant.updatedAt}:${pen}:${weight}`;
+    if (requested.get(key) === signature) return;
+    requested.set(key, signature);
+    if (variant.source === 'photo') {
+      useStudio.getState().setOutline(key, variant.contours);
+      return;
+    }
+    // Grid order doubles as priority, so after a weight change the glyphs near the top come back first.
+    pool!.outline(variant.strokes, pen, weight, order.get(key) ?? order.size).then((contours) => {
+      if (requested.get(key) === signature) useStudio.getState().setOutline(key, contours);
+    });
+  };
+  for (const [ch, versions] of Object.entries(project.glyphs)) versions.forEach((v, k) => v && want({ kind: 'glyph', ch, version: k as 0 | 1 | 2 }, v));
+  for (const [pair, v] of Object.entries(project.pairs)) want({ kind: 'pair', pair }, v);
+}
+
+export function startEngine() {
+  sync(useStudio.getState().project);
+  return useStudio.subscribe((state, prev) => {
+    if (state.project !== prev.project) sync(state.project);
+  });
+}
