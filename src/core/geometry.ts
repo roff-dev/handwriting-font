@@ -31,15 +31,47 @@ export function flatten(contour: Contour, steps = 12): Ring {
   return out;
 }
 
-export function bounds(contours: Contour[], steps = 8): Bounds {
+/** Parameters in (0, 1) where one coordinate of a cubic has a turning point (roots of its derivative). */
+function extrema(a: number, b: number, c: number, d: number, out: number[]) {
+  const qa = -a + 3 * b - 3 * c + d, qb = 2 * (a - 2 * b + c), qc = b - a;
+  if (Math.abs(qa) < 1e-12) {
+    if (Math.abs(qb) > 1e-12) out.push(-qc / qb);
+    return;
+  }
+  const disc = qb * qb - 4 * qa * qc;
+  if (disc < 0) return;
+  const s = Math.sqrt(disc);
+  out.push((-qb + s) / (2 * qa), (-qb - s) / (2 * qa));
+}
+
+/** Exact bounding box of the curves (not their control points). */
+export function bounds(contours: Contour[]): Bounds {
   const b = { x0: Infinity, y0: Infinity, x1: -Infinity, y1: -Infinity };
-  for (const c of contours) for (const [x, y] of flatten(c, steps)) {
+  const ts: number[] = [];
+  const add = ([x, y]: Point) => {
     if (x < b.x0) b.x0 = x;
     if (x > b.x1) b.x1 = x;
     if (y < b.y0) b.y0 = y;
     if (y > b.y1) b.y1 = y;
+  };
+  for (const c of contours) for (const seg of c) {
+    add(seg[0]);
+    add(seg[3]);
+    ts.length = 0;
+    extrema(seg[0][0], seg[1][0], seg[2][0], seg[3][0], ts);
+    extrema(seg[0][1], seg[1][1], seg[2][1], seg[3][1], ts);
+    for (const t of ts) if (t > 0 && t < 1) add(cubicAt(seg, t));
   }
   return b;
+}
+
+/** Exact signed area of a closed cubic contour (Green's theorem); positive when anticlockwise in y-up. */
+export function contourArea(contour: Contour): number {
+  let a = 0;
+  for (const [[x0, y0], [x1, y1], [x2, y2], [x3, y3]] of contour) {
+    a += (3 * ((y3 - y0) * (x1 + x2) - (x3 - x0) * (y1 + y2) + y1 * (x0 - x2) - x1 * (y0 - y2) + y3 * (x2 + x0 / 3) - x3 * (y2 + y0 / 3))) / 20;
+  }
+  return a;
 }
 
 export function distToSegment(p: Point, a: Point, b: Point): number {

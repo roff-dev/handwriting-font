@@ -1,4 +1,4 @@
-import { bounds, flatten, ringArea, type Bounds, type Contour } from '../geometry';
+import { bounds, contourArea, type Bounds, type Contour } from '../geometry';
 
 export const GUIDES = { baseline: 0, xHeight: 480, capHeight: 700, descender: -240 } as const;
 
@@ -26,9 +26,9 @@ export const isCapitalLike = (ch: string) => /^[A-Z0-9]$/.test(ch);
  */
 export function mainInk(contours: Contour[]): Contour[] {
   const outers = contours
-    .filter((c) => ringArea(flatten(c, 6)) > 0)
+    .filter((c) => contourArea(c) > 0)
     .map((c) => {
-      const b = bounds([c], 4);
+      const b = bounds([c]);
       return { c, size: Math.max(b.x1 - b.x0, b.y1 - b.y0) };
     });
   if (!outers.length) return contours;
@@ -36,4 +36,11 @@ export function mainInk(contours: Contour[]): Contour[] {
   return outers.filter((o) => o.size >= 0.5 * largest).map((o) => o.c);
 }
 
-export const mainInkBounds = (contours: Contour[]): Bounds => bounds(mainInk(contours));
+// Tidy, composition and the references all ask for the same glyph's main ink; outlines are never mutated.
+const measured = new WeakMap<Contour[], Bounds>();
+
+export function mainInkBounds(contours: Contour[]): Bounds {
+  let b = measured.get(contours);
+  if (!b) measured.set(contours, (b = bounds(mainInk(contours))));
+  return b;
+}
