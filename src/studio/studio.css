@@ -1,0 +1,15 @@
+.studio {
+  min-height: 100dvh;
+  padding: max(var(--space-4), env(safe-area-inset-top)) max(var(--space-4), env(safe-area-inset-right)) max(var(--space-4), env(safe-area-inset-bottom)) max(var(--space-4), env(safe-area-inset-left));
+  background: var(--paper-deep);
+}
+
+.studio__prompt {
+  margin: 0 0 var(--space-3);
+  font-size: 1.25rem;
+}
+
+.studio__pad {
+  width: min(100%, 62dvh, 560px);
+  margin-inline: auto;
+}

@@ -11,6 +11,7 @@ export default defineConfig({
     rolldownOptions: {
       input: {
         home: page('index.html'),
+        studio: page('studio/index.html'),
       },
     },
   },
