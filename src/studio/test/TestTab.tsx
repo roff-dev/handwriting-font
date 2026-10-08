@@ -1,4 +1,4 @@
-import { useId, useState } from 'react';
+import { useId, useState, type CSSProperties } from 'react';
 import { WEIGHT_RANGE, type PenId } from '../../core/ink/strokes';
 import { SPACING_RANGE } from '../../core/metrics/spacing';
 import { fontWorker, useLiveFont } from '../font';
@@ -26,7 +26,16 @@ function Slider({ label, value, min, max, step, onChange, format }: { label: str
     <div className="control">
       <label htmlFor={id}>{label}</label>
       <output htmlFor={id}>{format(value)}</output>
-      <input id={id} type="range" min={min} max={max} step={step} value={value} onChange={(e) => onChange(Number(e.target.value))} />
+      <input
+        id={id}
+        type="range"
+        min={min}
+        max={max}
+        step={step}
+        value={value}
+        style={{ '--fill': (value - min) / (max - min) } as CSSProperties}
+        onChange={(e) => onChange(Number(e.target.value))}
+      />
     </div>
   );
 }

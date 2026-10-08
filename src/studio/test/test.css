@@ -94,11 +94,68 @@
   color: var(--ink-soft);
 }
 
+/*
+ * The same slider in every browser: a thin track, inked up to a paper knob. --fill (0–1) comes from the
+ * component; the ink stops at the knob's centre, which travels half a knob in from each end.
+ */
 .control input[type='range'] {
+  --knob: 22px;
+  --track: 4px;
+  --filled: calc(var(--knob) / 2 + var(--fill, 0) * (100% - var(--knob)));
   grid-column: 1 / -1;
   width: 100%;
   min-height: 44px;
-  accent-color: var(--ink);
+  margin: 0;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  appearance: none;
+  cursor: pointer;
+}
+
+.control input[type='range']::-webkit-slider-runnable-track {
+  height: var(--track);
+  border-radius: var(--radius-pill);
+  background: linear-gradient(to right, var(--ink) var(--filled), color-mix(in srgb, var(--ink) 16%, transparent) var(--filled));
+}
+
+.control input[type='range']::-moz-range-track {
+  height: var(--track);
+  border-radius: var(--radius-pill);
+  background: linear-gradient(to right, var(--ink) var(--filled), color-mix(in srgb, var(--ink) 16%, transparent) var(--filled));
+}
+
+.control input[type='range']::-webkit-slider-thumb {
+  width: var(--knob);
+  height: var(--knob);
+  margin-top: calc((var(--track) - var(--knob)) / 2);
+  border: 0;
+  border-radius: 50%;
+  background: var(--sheet);
+  box-shadow:
+    0 0 0 2px var(--ink),
+    0 2px 6px rgb(var(--shadow) / 0.25);
+  appearance: none;
+  transition: scale 0.15s var(--ease-out);
+}
+
+.control input[type='range']::-moz-range-thumb {
+  width: var(--knob);
+  height: var(--knob);
+  border: 0;
+  border-radius: 50%;
+  background: var(--sheet);
+  box-shadow:
+    0 0 0 2px var(--ink),
+    0 2px 6px rgb(var(--shadow) / 0.25);
+  transition: scale 0.15s var(--ease-out);
+}
+
+.control input[type='range']:active::-webkit-slider-thumb {
+  scale: 1.15;
+}
+
+.control input[type='range']:active::-moz-range-thumb {
+  scale: 1.15;
 }
 
 .control--choice,
