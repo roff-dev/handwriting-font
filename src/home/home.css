@@ -74,6 +74,20 @@
   margin-inline: auto;
 }
 
+/* Until the island mounts, a blank sheet holds the pad's place (prompt above, buttons below), so the
+   sections under it don't jump when it arrives. */
+.hero__pad:empty {
+  padding-block: calc(1.6rem * 1.1 + var(--space-3)) calc(44px + var(--space-3));
+}
+
+.hero__pad:empty::before {
+  content: '';
+  display: block;
+  aspect-ratio: 1;
+  border-radius: var(--radius);
+  background: var(--sheet);
+}
+
 .home-pad {
   display: grid;
   gap: var(--space-3);
