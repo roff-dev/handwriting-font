@@ -7,6 +7,7 @@ import { describe, prompt, slotKey } from '../slots';
 import { useStudio } from '../store';
 import { Preview } from '../test/Preview';
 import { SAMPLE } from '../test/TestTab';
+import { Finished } from './Finished';
 import { Flight } from './Flight';
 import { GlyphGrid } from './GlyphGrid';
 import './write.css';
@@ -74,75 +75,83 @@ export function WriteTab() {
 
   return (
     <div className={`write${cursor.kind === 'pair' ? ' write--wide' : ''}`}>
-        {showAlphabetNotice ? (
-          <div className="write__prompt" role="status">
-            <p className="write__title">That's the alphabet.</p>
-            <p className="write__hint">Capitals next, or try your font out now.</p>
-            <div className="write__choices">
-              <button type="button" className="button button--primary" onClick={s.dismissAlphabetNotice}>
-                Carry on with capitals
-              </button>
-              <button type="button" className="button" onClick={() => s.setTab('test')}>
-                Try it out
-              </button>
+      {s.finished ? (
+        <Finished />
+      ) : (
+        <>
+          {showAlphabetNotice ? (
+            <div className="write__prompt" role="status">
+              <p className="write__title">That's the alphabet.</p>
+              <p className="write__hint">Capitals next, or try your font out now.</p>
+              <div className="write__choices">
+                <button type="button" className="button button--primary" onClick={s.dismissAlphabetNotice}>
+                  Carry on with capitals
+                </button>
+                <button type="button" className="button" onClick={() => s.setTab('test')}>
+                  Try it out
+                </button>
+              </div>
             </div>
+          ) : (
+            <div className="write__prompt">
+              <p className="write__title" id="prompt">{p.title}</p>
+              {p.hint && <p className="write__hint" id="prompt-hint">{p.hint}</p>}
+            </div>
+          )}
+
+          <div className="write__pad" ref={pad}>
+            <Pad
+              box={cursor.kind === 'pair' ? PAIR_BOX : LETTER_BOX}
+              strokes={draft}
+              pen={settings.pen}
+              weight={settings.weight}
+              ignoreTouch={!s.fingerAllowed}
+              onPen={s.penDetected}
+              onStroke={(stroke) => {
+                setHint(false);
+                s.addStroke(stroke);
+              }}
+              ghost={ghost}
+              label={label}
+              describedBy={p.hint ? 'prompt prompt-hint' : 'prompt'}
+            />
           </div>
-        ) : (
-          <div className="write__prompt">
-            <p className="write__title" id="prompt">{p.title}</p>
-            {p.hint && <p className="write__hint" id="prompt-hint">{p.hint}</p>}
+
+          <div className="write__actions">
+            <button type="button" className="button button--quiet" onClick={s.undo} disabled={!s.past.length} aria-keyshortcuts="Control+Z Meta+Z">
+              <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M8 5 3.5 9.5 8 14M4 9.5h7.5a4.5 4.5 0 0 1 0 9H10" /></svg>
+              Undo
+            </button>
+            <button type="button" className="button button--quiet" onClick={s.clear} disabled={!draft.length}>
+              Clear
+            </button>
+            <button type="button" className="button button--quiet write__skip" onClick={s.skip}>
+              Skip
+            </button>
+            <button type="button" className="button button--primary write__next" aria-disabled={!draft.length} onClick={next}>
+              Next
+            </button>
           </div>
-        )}
+          <p className="write__nudge" aria-live="polite">{hint ? 'Draw something first, or skip.' : ''}</p>
 
-        <div className="write__pad" ref={pad}>
-          <Pad
-            box={cursor.kind === 'pair' ? PAIR_BOX : LETTER_BOX}
-            strokes={draft}
-            pen={settings.pen}
-            weight={settings.weight}
-            ignoreTouch={!s.fingerAllowed}
-            onPen={s.penDetected}
-            onStroke={(stroke) => {
-              setHint(false);
-              s.addStroke(stroke);
-            }}
-            ghost={ghost}
-            label={label}
-            describedBy={p.hint ? 'prompt prompt-hint' : 'prompt'}
-          />
-        </div>
-
-        <div className="write__actions">
-          <button type="button" className="button button--quiet" onClick={s.undo} disabled={!s.past.length} aria-keyshortcuts="Control+Z Meta+Z">
-            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M8 5 3.5 9.5 8 14M4 9.5h7.5a4.5 4.5 0 0 1 0 9H10" /></svg>
-            Undo
-          </button>
-          <button type="button" className="button button--quiet" onClick={s.clear} disabled={!draft.length}>
-            Clear
-          </button>
-          <button type="button" className="button button--quiet write__skip" onClick={s.skip}>
-            Skip
-          </button>
-          <button type="button" className="button button--primary write__next" aria-disabled={!draft.length} onClick={next}>
-            Next
-          </button>
-        </div>
-        <p className="write__nudge" aria-live="polite">{hint ? 'Draw something first, or skip.' : ''}</p>
-
-        {s.penSeen && (
-          <label className="write__finger">
-            <input type="checkbox" checked={s.fingerAllowed} onChange={(e) => s.allowFinger(e.target.checked)} />
-            Drawing with your finger?
-          </label>
-        )}
+          {s.penSeen && (
+            <label className="write__finger">
+              <input type="checkbox" checked={s.fingerAllowed} onChange={(e) => s.allowFinger(e.target.checked)} />
+              Drawing with your finger?
+            </label>
+          )}
+        </>
+      )}
 
       <div className="write__grid">
         <GlyphGrid />
       </div>
 
-      <div className="write__tester" aria-label="Your font so far">
-        <Preview text={SAMPLE} size={44} features={{ variants: true, pairs: true, kerning: true }} />
-      </div>
+      {!s.finished && (
+        <div className="write__tester" aria-label="Your font so far">
+          <Preview text={SAMPLE} size={44} features={{ variants: true, pairs: true, kerning: true }} />
+        </div>
+      )}
 
       <Flight pad={pad} />
     </div>

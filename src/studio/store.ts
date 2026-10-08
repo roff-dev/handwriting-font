@@ -23,6 +23,9 @@ type State = {
   /** The last slot committed, for the flight animation. */
   committed: { slot: Slot; strokes: Stroke[]; at: number } | null;
   alphabetNoticeSeen: boolean;
+  /** Everything in the chosen sets is drawn: the Write tab shows the finished state instead of the pad. */
+  finished: boolean;
+  moreOpen: boolean;
 
   addStroke: (s: Stroke) => void;
   undo: () => void;
@@ -41,6 +44,7 @@ type State = {
   allowFinger: (allowed: boolean) => void;
   setStorage: (s: StorageState) => void;
   dismissAlphabetNotice: () => void;
+  setMoreOpen: (open: boolean) => void;
 };
 
 const FIRST: Slot = { kind: 'glyph', ch: 'a', version: 0 };
@@ -61,6 +65,8 @@ export function nextOpen(project: Project, from: Slot): Slot {
   return from;
 }
 
+export const allDone = (project: Project) => sequence(project).every((s) => isDone(project, s));
+
 export const firstOpen = (project: Project): Slot => {
   const seq = sequence(project);
   return seq.find((s) => !isDone(project, s)) ?? seq[0] ?? FIRST;
@@ -79,6 +85,8 @@ export const useStudio = create<State>((set, get) => ({
   storage: 'unknown',
   committed: null,
   alphabetNoticeSeen: false,
+  finished: false,
+  moreOpen: false,
 
   addStroke: (s) => set(({ draft, past }) => ({ draft: [...draft, s], past: [...past, draft], future: [] })),
   undo: () =>
@@ -98,8 +106,13 @@ export const useStudio = create<State>((set, get) => ({
       versions[Math.min(cursor.version, versions.length)] = variant;
       next = { ...project, glyphs: { ...project.glyphs, [cursor.ch]: versions } };
     }
+    const committed = { slot: cursor, strokes: draft, at: variant.updatedAt };
+    if (allDone(next)) {
+      set({ project: next, committed, finished: true, draft: [], past: [], future: [] });
+      return;
+    }
     const to = nextOpen(next, cursor);
-    set({ project: next, committed: { slot: cursor, strokes: draft, at: variant.updatedAt }, cursor: to, draft: strokesFor(next, to), past: [], future: [] });
+    set({ project: next, committed, cursor: to, draft: strokesFor(next, to), past: [], future: [] });
   },
 
   skip: () => {
@@ -109,9 +122,18 @@ export const useStudio = create<State>((set, get) => ({
     set({ cursor: to, draft: strokesFor(project, to), past: [], future: [] });
   },
 
-  select: (slot) => set(({ project }) => ({ cursor: slot, draft: strokesFor(project, slot), past: [], future: [], tab: 'write' })),
+  select: (slot) => set(({ project }) => ({ cursor: slot, draft: strokesFor(project, slot), past: [], future: [], tab: 'write', finished: false })),
   setTab: (tab) => set({ tab }),
-  setSettings: (s) => set(({ project }) => ({ project: { ...project, settings: { ...project.settings, ...s } } })),
+  setSettings: (s) =>
+    set(({ project, finished }) => {
+      const next = { ...project, settings: { ...project.settings, ...s } };
+      // Adding a set after finishing brings its first character straight to the pad.
+      if (finished && !allDone(next)) {
+        const cursor = firstOpen(next);
+        return { project: next, finished: false, cursor, draft: strokesFor(next, cursor), past: [], future: [] };
+      }
+      return { project: next };
+    }),
   setNames: (n) => set(({ project }) => ({ project: { ...project, ...n } })),
 
   addPair: (pair) =>
@@ -119,20 +141,21 @@ export const useStudio = create<State>((set, get) => ({
       const sets = project.settings.sets.includes('pairs') ? project.settings.sets : [...project.settings.sets, 'pairs' as const];
       const slot: Slot = { kind: 'pair', pair };
       if (Object.keys(project.pairs).length >= MAX_PAIRS) return {};
-      return { project: { ...project, settings: { ...project.settings, sets } }, cursor: slot, draft: strokesFor(project, slot), past: [], future: [], tab: 'write' };
+      return { project: { ...project, settings: { ...project.settings, sets } }, cursor: slot, draft: strokesFor(project, slot), past: [], future: [], tab: 'write', finished: false };
     }),
 
   setOutline: (key, contours) => set(({ outlines }) => ({ outlines: { ...outlines, [key]: contours } })),
 
   replaceProject: (p) => {
     const cursor = firstOpen(p);
-    set({ project: p, cursor, draft: strokesFor(p, cursor), past: [], future: [], outlines: {}, committed: null });
+    set({ project: p, cursor, draft: strokesFor(p, cursor), past: [], future: [], outlines: {}, committed: null, finished: allDone(p) });
   },
 
   penDetected: () => set(({ penSeen }) => (penSeen ? {} : { penSeen: true, fingerAllowed: false })),
   allowFinger: (allowed) => set({ fingerAllowed: allowed }),
   setStorage: (storage) => set({ storage }),
   dismissAlphabetNotice: () => set({ alphabetNoticeSeen: true }),
+  setMoreOpen: (moreOpen) => set({ moreOpen }),
 }));
 
 export { slotKey };

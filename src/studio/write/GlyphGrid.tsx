@@ -45,6 +45,7 @@ function label(slot: Slot, drawn: boolean, versions: number) {
 export function GlyphGrid() {
   const project = useStudio((s) => s.project);
   const cursor = useStudio((s) => s.cursor);
+  const finished = useStudio((s) => s.finished);
   const outlines = useStudio((s) => s.outlines);
   const select = useStudio((s) => s.select);
   const list = useRef<HTMLDivElement>(null);
@@ -64,7 +65,7 @@ export function GlyphGrid() {
               const key = slotKey(slot), drawn = isDone(project, slot), contours = outlines[key];
               const box = slot.kind === 'pair' ? PAIR_BOX : LETTER_BOX;
               const versions = slot.kind === 'glyph' ? project.glyphs[slot.ch]?.length ?? 0 : 0;
-              const current = sameSlot(slot, cursor);
+              const current = !finished && sameSlot(slot, cursor);
               return (
                 <button
                   key={key}

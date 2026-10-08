@@ -36,7 +36,8 @@ export function Studio() {
   const tab = useStudio((s) => s.tab);
   const storage = useStudio((s) => s.storage);
   const [toast, setToast] = useState<string | null>(null);
-  const [moreOpen, setMoreOpen] = useState(false);
+  const moreOpen = useStudio((s) => s.moreOpen);
+  const setMoreOpen = useStudio((s) => s.setMoreOpen);
   const started = useRef(false);
 
   useEffect(() => {

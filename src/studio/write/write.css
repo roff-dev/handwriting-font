@@ -178,3 +178,18 @@
     max-width: 840px;
   }
 }
+
+.write__finished {
+  grid-area: prompt;
+  display: grid;
+  gap: var(--space-3);
+}
+
+.write__finished .write__title {
+  font-size: clamp(2.4rem, 6vw + 1rem, 4rem);
+}
+
+.write__specimen {
+  max-width: 440px;
+  margin-top: var(--space-4);
+}
