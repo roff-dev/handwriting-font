@@ -6,10 +6,51 @@
     <title>Handwriting Font Maker</title>
     <meta name="description" content="Write each letter on your phone and download a real font of your own handwriting. Free, no account, and nothing you draw leaves your device." />
   </head>
-  <body>
+  <body class="home">
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="home__bar">
+      <a class="home__brand" href="/">Handwriting Font Maker</a>
+      <a class="home__studio" href="/studio/">Open the studio</a>
+    </header>
+
     <main id="main">
-      <h1>Your handwriting, as a real font.</h1>
+      <section class="hero" aria-labelledby="headline">
+        <div class="hero__text">
+          <h1 class="hero__title" id="headline">Your handwriting, as a real font.</h1>
+          <p class="hero__sub">Write each letter on your phone. Download a font that installs on your iPhone, Mac or PC. Nothing you draw leaves this device.</p>
+          <a class="button button--primary hero__cta" href="/studio/" data-cta>Start writing</a>
+        </div>
+        <div class="hero__desk">
+          <div class="hero__pad" id="home-pad"></div>
+        </div>
+      </section>
+
+      <section class="steps" aria-labelledby="steps-title">
+        <h2 class="steps__title" id="steps-title">How it works</h2>
+        <ol class="steps__list">
+          <li class="step">
+            <span class="step__number" aria-hidden="true">1</span>
+            <h3 class="step__name">Write</h3>
+            <p class="step__text">Write each letter on your phone, with a finger or a pen. Prefer paper? Print a template and take a photo.</p>
+          </li>
+          <li class="step">
+            <span class="step__number" aria-hidden="true">2</span>
+            <h3 class="step__name">Test</h3>
+            <p class="step__text">Type anything in your font as you go. Spacing, kerning and your joined-up pairs are worked out for you.</p>
+          </li>
+          <li class="step">
+            <span class="step__number" aria-hidden="true">3</span>
+            <h3 class="step__name">Install</h3>
+            <p class="step__text">Download it for your computer, install it on your iPhone or iPad in one tap, or put it on a website.</p>
+          </li>
+        </ol>
+      </section>
     </main>
+
+    <div class="cta-bar">
+      <a class="button button--primary" href="/studio/" data-cta>Start writing</a>
+    </div>
+
     <script type="module" src="/src/home/main.tsx"></script>
   </body>
 </html>

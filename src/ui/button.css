@@ -11,6 +11,7 @@
   color: var(--ink);
   font: inherit;
   font-weight: 500;
+  text-decoration: none;
   cursor: pointer;
   transition: background-color 0.15s, transform 0.12s var(--ease-out), opacity 0.15s;
   -webkit-tap-highlight-color: transparent;

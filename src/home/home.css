@@ -1,0 +1,230 @@
+.home {
+  --gutter: max(var(--space-4), env(safe-area-inset-left));
+}
+
+.skip-link {
+  position: absolute;
+  left: var(--space-3);
+  top: -100px;
+  z-index: 50;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-pill);
+  background: var(--ink);
+  color: var(--sheet);
+}
+
+.skip-link:focus {
+  top: var(--space-3);
+}
+
+.home__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: max(var(--space-3), env(safe-area-inset-top)) var(--gutter) var(--space-3);
+}
+
+.home__brand {
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  text-decoration: none;
+}
+
+.home__studio {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--ink);
+  font-weight: 500;
+  text-underline-offset: 0.2em;
+}
+
+.hero {
+  display: grid;
+  gap: var(--space-6);
+  padding: var(--space-5) var(--gutter) var(--space-8);
+}
+
+.hero__title {
+  max-width: 11ch;
+  text-wrap: balance;
+}
+
+.hero__letter--hand {
+  /* Handwriting sits lower and smaller than the serif's capitals; nudge it onto the same optical line. */
+  font-size: 1.04em;
+}
+
+.hero__sub {
+  max-width: 34rem;
+  margin: var(--space-4) 0 0;
+  color: var(--ink-soft);
+  font-size: 1.125rem;
+  line-height: 1.55;
+}
+
+.hero__cta {
+  display: none;
+}
+
+.hero__pad {
+  width: min(100%, 62dvh);
+  margin-inline: auto;
+}
+
+.home-pad {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.home-pad__prompt {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  line-height: 1.1;
+}
+
+.home-pad__hint {
+  margin: 0;
+  color: var(--ink-soft);
+}
+
+.home-pad__actions {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.home-pad--done {
+  padding: var(--space-6) 0;
+}
+
+.steps {
+  padding: var(--space-8) var(--gutter) calc(var(--space-9) + env(safe-area-inset-bottom));
+  border-top: 1px solid color-mix(in srgb, var(--ink) 12%, transparent);
+}
+
+.steps__title {
+  margin-bottom: var(--space-6);
+  font-family: var(--font-display);
+  font-size: var(--text-h2);
+}
+
+.steps__list {
+  display: grid;
+  gap: var(--space-6);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.step {
+  display: grid;
+  grid-template-columns: 3.5rem 1fr;
+  column-gap: var(--space-4);
+  align-items: start;
+}
+
+.step__number {
+  grid-row: span 2;
+  font-family: var(--font-display);
+  font-size: 3.5rem;
+  line-height: 0.85;
+  color: var(--guide);
+}
+
+.step__name {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.step__text {
+  max-width: 34ch;
+  margin: var(--space-1) 0 0;
+  color: var(--ink-soft);
+}
+
+/* On phones the call to action sits within thumb reach at the bottom of the screen. */
+.cta-bar {
+  position: fixed;
+  inset: auto 0 0;
+  z-index: 10;
+  display: flex;
+  padding: var(--space-3) var(--gutter) max(var(--space-3), env(safe-area-inset-bottom));
+  background: linear-gradient(to top, var(--paper) 70%, color-mix(in srgb, var(--paper) 0%, transparent));
+}
+
+.cta-bar .button {
+  flex: 1;
+  min-height: 52px;
+  font-size: 1.05rem;
+}
+
+@media (min-width: 1100px) {
+  .hero {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    align-items: center;
+    column-gap: var(--space-5);
+    min-height: calc(100dvh - 72px);
+    padding: var(--space-6) var(--space-8) var(--space-8);
+  }
+
+  .hero__text {
+    grid-column: 1 / span 7;
+  }
+
+  .hero__desk {
+    grid-column: 8 / span 5;
+  }
+
+  .hero__pad {
+    width: 100%;
+    max-width: 520px;
+  }
+
+  .hero__cta {
+    display: inline-flex;
+    margin-top: var(--space-6);
+    min-height: 52px;
+    padding: 0 var(--space-6);
+    font-size: 1.05rem;
+  }
+
+  .cta-bar {
+    display: none;
+  }
+
+  .home__bar {
+    padding: var(--space-5) var(--space-8) 0;
+  }
+
+  .steps {
+    padding: var(--space-9) var(--space-8);
+  }
+
+  .steps__list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-7);
+  }
+}
+
+/* The pad lies on the desk at a slight angle and straightens when a mouse comes to write on it. */
+@media (min-width: 1100px) and (hover: hover) and (pointer: fine) {
+  .hero__pad .pad {
+    rotate: -1.5deg;
+    transition: rotate 0.35s var(--ease-out);
+  }
+
+  .hero__pad:hover .pad,
+  .hero__pad:focus-within .pad {
+    rotate: 0deg;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero__pad .pad {
+    rotate: 0deg;
+  }
+}
