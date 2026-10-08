@@ -58,7 +58,6 @@
 .test__compare {
   padding-top: var(--space-4);
   border-top: 1px dashed color-mix(in srgb, var(--guide) 60%, transparent);
-  opacity: 0.75;
 }
 
 .missing {

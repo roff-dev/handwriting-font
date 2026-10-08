@@ -61,6 +61,7 @@ h1 {
   *::before,
   *::after {
     animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
     transition-duration: 150ms !important;
   }
 }

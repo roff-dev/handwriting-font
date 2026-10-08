@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState, type KeyboardEvent } from 'react';
 import { ACCENT_MARKS, DIGITS, EXTRAS, LOWERCASE, PUNCTUATION, UPPERCASE } from '../../core/project/sets';
 import { cellViewBox, contourPathData } from '../../ui/glyphPath';
 import { LETTER_BOX, PAIR_BOX } from '../../ui/pad/geometry';
@@ -8,6 +8,19 @@ import './grid.css';
 
 type Group = { title: string; slots: Slot[] };
 
+/** The cell in the next or previous visual row that sits closest under or over cell `i`. */
+function verticalNeighbour(cells: HTMLElement[], i: number, dir: 1 | -1): number | undefined {
+  const from = cells[i]!.getBoundingClientRect(), cx = from.left + from.width / 2;
+  let best: number | undefined, bestGap = Infinity, bestDx = Infinity;
+  cells.forEach((cell, j) => {
+    const b = cell.getBoundingClientRect();
+    const gap = dir > 0 ? b.top - from.bottom : from.top - b.bottom;
+    if (gap < -1) return;
+    const dx = Math.abs(b.left + b.width / 2 - cx);
+    if (gap < bestGap - 2 || (Math.abs(gap - bestGap) <= 2 && dx < bestDx)) [best, bestGap, bestDx] = [j, gap, dx];
+  });
+  return best;
+}
 
 function groups(slots: Slot[]): Group[] {
   const of = (title: string, test: (s: Slot) => boolean) => ({ title, slots: slots.filter(test) });
@@ -42,6 +55,21 @@ export function GlyphGrid() {
   const outlines = useStudio((s) => s.outlines);
   const select = useStudio((s) => s.select);
   const list = useRef<HTMLDivElement>(null);
+  // One tab stop for the whole grid: the cell last focused while inside it, otherwise the current character.
+  const [focused, setFocused] = useState<string | null>(null);
+  const slots = sequence(project);
+  const keys = slots.map(slotKey);
+  const stop = focused && keys.includes(focused) ? focused : !finished && keys.includes(slotKey(cursor)) ? slotKey(cursor) : keys[0];
+
+  const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+    const cells = [...e.currentTarget.querySelectorAll<HTMLElement>('.cell')];
+    const i = cells.indexOf(document.activeElement as HTMLElement);
+    if (i < 0) return;
+    const to = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: cells.length - 1 }[e.key] ?? (e.key === 'ArrowDown' ? verticalNeighbour(cells, i, 1) : e.key === 'ArrowUp' ? verticalNeighbour(cells, i, -1) : undefined);
+    if (to === undefined || !cells[to]) return;
+    e.preventDefault();
+    cells[to].focus();
+  };
 
   useEffect(() => {
     const cell = list.current?.querySelector<HTMLElement>(`[data-slot="${CSS.escape(slotKey(cursor))}"]`);
@@ -49,8 +77,15 @@ export function GlyphGrid() {
   }, [cursor]);
 
   return (
-    <div className="grid" ref={list}>
-      {groups(sequence(project)).map((g) => (
+    <div
+      className="grid"
+      ref={list}
+      onKeyDown={onKeyDown}
+      onBlur={(e) => {
+        if (!e.currentTarget.contains(e.relatedTarget)) setFocused(null);
+      }}
+    >
+      {groups(slots).map((g) => (
         <section className="grid__group" key={g.title} aria-label={g.title}>
           <h2 className="grid__title">{g.title}</h2>
           <div className="grid__cells">
@@ -68,6 +103,8 @@ export function GlyphGrid() {
                   data-drawn={drawn}
                   aria-current={current ? 'step' : undefined}
                   aria-label={label(slot, drawn, versions)}
+                  tabIndex={key === stop ? 0 : -1}
+                  onFocus={() => setFocused(key)}
                   title={slot.kind === 'glyph' ? describe(slot.ch) : `${slot.pair}, joined`}
                   onClick={() => select(slot)}
                 >

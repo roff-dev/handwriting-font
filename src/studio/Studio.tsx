@@ -21,10 +21,21 @@ const TABS: { id: Tab; label: string }[] = [
 function Tabs({ placement }: { placement: 'top' | 'bottom' }) {
   const tab = useStudio((s) => s.tab);
   const setTab = useStudio((s) => s.setTab);
+  // One tab stop for the whole bar; the arrow keys move between tabs. Paper import lives under Write.
+  const current = TABS.findIndex((t) => t.id === tab);
+  const stop = current < 0 ? 0 : current;
+  const onKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    const to = { ArrowRight: stop + 1, ArrowLeft: stop - 1, Home: 0, End: TABS.length - 1 }[e.key];
+    if (to === undefined) return;
+    e.preventDefault();
+    const next = (to + TABS.length) % TABS.length;
+    setTab(TABS[next]!.id);
+    e.currentTarget.querySelectorAll<HTMLElement>('[role="tab"]')[next]?.focus();
+  };
   return (
-    <div className={`studio__tabs studio__tabs--${placement}`} role="tablist" aria-label="Studio">
-      {TABS.map((t) => (
-        <button key={t.id} type="button" role="tab" id={`tab-${t.id}-${placement}`} aria-selected={tab === t.id} aria-controls={`panel-${t.id}`} onClick={() => setTab(t.id)}>
+    <div className={`studio__tabs studio__tabs--${placement}`} role="tablist" aria-label="Studio" onKeyDown={onKeyDown}>
+      {TABS.map((t, i) => (
+        <button key={t.id} type="button" role="tab" id={`tab-${t.id}-${placement}`} aria-selected={tab === t.id} aria-controls={`panel-${t.id}`} tabIndex={i === stop ? 0 : -1} onClick={() => setTab(t.id)}>
           {t.label}
         </button>
       ))}
@@ -101,7 +112,9 @@ export function Studio() {
         </section>
       </main>
 
-      <Tabs placement="bottom" />
+      <nav aria-label="Studio tabs">
+        <Tabs placement="bottom" />
+      </nav>
 
       <MoreSheet open={moreOpen} onClose={() => setMoreOpen(false)} />
 

@@ -194,7 +194,7 @@ export function ExportTab() {
                   {u.how}
                   {u.app === 'Your website' && (
                     <span className="snippet">
-                      <code>{css}</code>
+                      <code tabIndex={0} aria-label="CSS for your website">{css}</code>
                       <button
                         type="button"
                         className="button button--quiet"
