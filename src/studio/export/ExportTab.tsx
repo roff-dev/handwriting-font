@@ -56,7 +56,6 @@ function Field({ label, value, onChange, error, hint, maxLength }: { label: stri
   );
 }
 
-const POSTER = { paper: '#fbf9f4', ink: '#1a1917', soft: '#57524a', accent: '#b3341c' };
 
 export function ExportTab() {
   const project = useStudio((s) => s.project);
@@ -236,7 +235,7 @@ export function ExportTab() {
             <button
               type="button"
               className="button"
-              onClick={async () => deliver(await specimenPng(specimen, POSTER), `${ps}-specimen.png`)}
+              onClick={async () => deliver(await specimenPng(specimen), `${ps}-specimen.png`)}
             >
               Share specimen
             </button>

@@ -4,6 +4,8 @@ import './specimen.css';
 
 export const SPECIMEN_SAMPLE = 'The quick brown fox jumps over the lazy dog.';
 export const WATERFALL = [96, 48, 24, 14];
+/** The poster is always printed on paper, whatever the studio's theme. */
+export const POSTER_COLOURS = { paper: '#fbf9f4', ink: '#1a1917', soft: '#57524a', accent: '#b3341c' };
 const DOUBLES = /(ss|pp)/g;
 
 export type SpecimenData = { family: string; cssFamily: string; display: string; colophon: string; pairsLine: string | null };
@@ -61,7 +63,7 @@ export function Specimen({ data }: { data: SpecimenData }) {
 const W = 1200, H = 1500, PAD = 96;
 
 /** The poster as a 1200 × 1500 PNG, drawn with the live font on a canvas (no SVG or DOM capture). */
-export async function specimenPng(data: SpecimenData, colours: { paper: string; ink: string; soft: string; accent: string }): Promise<Blob> {
+export async function specimenPng(data: SpecimenData, colours = POSTER_COLOURS): Promise<Blob> {
   await document.fonts.ready;
   const canvas = Object.assign(document.createElement('canvas'), { width: W, height: H });
   const ctx = canvas.getContext('2d')!;

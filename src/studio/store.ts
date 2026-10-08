@@ -128,12 +128,13 @@ export const useStudio = create<State>((set, get) => ({
   select: (slot) => set(({ project }) => ({ cursor: slot, draft: strokesFor(project, slot), past: [], future: [], tab: 'write', finished: false })),
   setTab: (tab) => set({ tab }),
   setSettings: (s) =>
-    set(({ project, finished }) => {
+    set(({ project, finished, cursor }) => {
       const next = { ...project, settings: { ...project.settings, ...s } };
-      // Adding a set after finishing brings its first character straight to the pad.
-      if (finished && !allDone(next)) {
-        const cursor = firstOpen(next);
-        return { project: next, finished: false, cursor, draft: strokesFor(next, cursor), past: [], future: [] };
+      if (allDone(next)) return { project: next, finished: true };
+      // Adding a set after finishing, or dropping the one being drawn, moves the pad to the next character to draw.
+      if (finished || !sequence(next).some((slot) => sameSlot(slot, cursor))) {
+        const to = firstOpen(next);
+        return { project: next, finished: false, cursor: to, draft: strokesFor(next, to), past: [], future: [] };
       }
       return { project: next };
     }),

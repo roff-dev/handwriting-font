@@ -211,6 +211,26 @@
 }
 
 .write__specimen {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-3);
   max-width: 440px;
   margin-top: var(--space-4);
+}
+
+.write__specimen .specimen-frame {
+  width: 100%;
+}
+
+.write__next-step {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-3);
+  max-width: 52ch;
+  padding: var(--space-4) 0;
+  border-top: 1px solid color-mix(in srgb, var(--ink) 12%, transparent);
+}
+
+.write__next-step p {
+  margin: 0;
 }
