@@ -1,12 +1,8 @@
-import { createStore, get, set } from 'idb-keyval';
-import { deserialize, serialize } from '../core/project/serialize';
 import { characters } from '../core/project/sets';
+import { loadProject, saveProject } from '../ui/projectDb';
 import { useStudio } from './store';
 
-const KEY = 'project';
 const SAVE_DELAY = 500;
-let db: ReturnType<typeof createStore> | undefined;
-const store = () => (db ??= createStore('handwriting-font-maker', 'projects'));
 
 export type Restored = { drawn: number; total: number } | null;
 
@@ -14,10 +10,9 @@ export type Restored = { drawn: number; total: number } | null;
 export async function restore(): Promise<Restored> {
   void navigator.storage?.persist?.().catch(() => false);
   try {
-    const bytes = await get<Uint8Array>(KEY, store());
+    const project = await loadProject();
     useStudio.getState().setStorage('ok');
-    if (!bytes) return null;
-    const project = deserialize(bytes);
+    if (!project) return null;
     useStudio.getState().replaceProject(project);
     const chars = characters(project.settings.sets);
     return { drawn: chars.filter((ch) => project.glyphs[ch]?.[0]).length, total: chars.length };
@@ -34,7 +29,7 @@ export function startAutosave() {
     if (state.project === prev.project || state.storage === 'unavailable') return;
     clearTimeout(timer);
     timer = setTimeout(() => {
-      set(KEY, serialize(useStudio.getState().project), store()).catch(() => useStudio.getState().setStorage('unavailable'));
+      saveProject(useStudio.getState().project).catch(() => useStudio.getState().setStorage('unavailable'));
     }, SAVE_DELAY);
   });
 }
