@@ -15,12 +15,10 @@ function sync(project: Project) {
     const key = slotKey(slot), signature = `${variant.updatedAt}:${pen}:${weight}`;
     if (requested.get(key) === signature) return;
     requested.set(key, signature);
-    if (variant.source === 'photo') {
-      useStudio.getState().setOutline(key, variant.contours);
-      return;
-    }
     // Grid order doubles as priority, so after a weight change the glyphs near the top come back first.
-    pool!.outline(variant.strokes, pen, weight, order.get(key) ?? order.size).then((contours) => {
+    const priority = order.get(key) ?? order.size;
+    const job = variant.source === 'photo' ? pool!.inflate(variant.contours, weight, priority) : pool!.outline(variant.strokes, pen, weight, priority);
+    job.then((contours) => {
       if (requested.get(key) === signature) useStudio.getState().setOutline(key, contours);
     });
   };
@@ -31,6 +29,8 @@ function sync(project: Project) {
 export function startEngine() {
   sync(useStudio.getState().project);
   return useStudio.subscribe((state, prev) => {
-    if (state.project !== prev.project) sync(state.project);
+    // A newly opened project starts with no outlines, even for glyphs requested before.
+    if (state.outlines !== prev.outlines && !Object.keys(state.outlines).length) requested.clear();
+    if (state.project !== prev.project || requested.size === 0) sync(state.project);
   });
 }
