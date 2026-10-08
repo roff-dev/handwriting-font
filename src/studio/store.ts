@@ -1,11 +1,12 @@
 import { create } from 'zustand';
 import type { Contour } from '../core/geometry';
+import type { Cell } from '../core/template/layout';
 import type { Stroke } from '../core/ink/strokes';
 import { emptyProject, type Project, type Settings } from '../core/project/schema';
 import { MAX_PAIRS } from '../core/project/sets';
 import { isDone, sameSlot, sequence, slotKey, type Slot } from './slots';
 
-export type Tab = 'write' | 'test' | 'export';
+export type Tab = 'write' | 'test' | 'export' | 'paper';
 export type StorageState = 'unknown' | 'ok' | 'unavailable';
 
 type State = {
@@ -38,6 +39,8 @@ type State = {
   setSettings: (s: Partial<Settings>) => void;
   setNames: (n: { name?: string; designer?: string }) => void;
   addPair: (pair: string) => void;
+  /** Glyphs read from a photo of the template; then back to the pad at the first character still to draw. */
+  addPhotoGlyphs: (glyphs: { cell: Cell; contours: Contour[] }[]) => void;
   setOutline: (key: string, contours: Contour[]) => void;
   replaceProject: (p: Project) => void;
   penDetected: () => void;
@@ -142,6 +145,19 @@ export const useStudio = create<State>((set, get) => ({
       const slot: Slot = { kind: 'pair', pair };
       if (Object.keys(project.pairs).length >= MAX_PAIRS) return {};
       return { project: { ...project, settings: { ...project.settings, sets } }, cursor: slot, draft: strokesFor(project, slot), past: [], future: [], tab: 'write', finished: false };
+    }),
+
+  addPhotoGlyphs: (glyphs) =>
+    set(({ project }) => {
+      const updatedAt = Date.now(), all = { ...project.glyphs };
+      for (const { cell, contours } of [...glyphs].sort((a, b) => a.cell.version - b.cell.version)) {
+        const versions = [...(all[cell.ch] ?? [])];
+        versions[Math.min(cell.version, versions.length)] = { source: 'photo', contours, updatedAt };
+        all[cell.ch] = versions;
+      }
+      const next = { ...project, glyphs: all };
+      const cursor = firstOpen(next);
+      return { project: next, cursor, draft: strokesFor(next, cursor), past: [], future: [], tab: 'write', finished: allDone(next) };
     }),
 
   setOutline: (key, contours) => set(({ outlines }) => ({ outlines: { ...outlines, [key]: contours } })),

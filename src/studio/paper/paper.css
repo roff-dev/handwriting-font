@@ -1,0 +1,173 @@
+.paper {
+  display: grid;
+  gap: var(--space-6);
+  max-width: 760px;
+  margin-inline: auto;
+}
+
+.paper__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.paper__title {
+  font-family: var(--font-display);
+  font-size: var(--text-h2);
+}
+
+.paper__steps {
+  display: grid;
+  gap: var(--space-6);
+  margin: 0;
+  padding-left: 1.4em;
+}
+
+.paper__steps h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.paper__steps p,
+.paper__lead {
+  max-width: 60ch;
+  margin: var(--space-1) 0 var(--space-3);
+  color: var(--ink-soft);
+}
+
+.paper__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.paper__drop {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.paper__drop-hint {
+  display: none;
+  color: var(--ink-soft);
+}
+
+.paper__drop--over {
+  outline: 2px dashed var(--proof);
+  outline-offset: 6px;
+  border-radius: var(--radius);
+}
+
+.paper__error {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-left: 3px solid var(--proof);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  background: var(--sheet);
+}
+
+.paper__error p {
+  margin: 0;
+}
+
+.paper__grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+
+.paper__cell {
+  width: 100%;
+}
+
+.paper__result {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.paper__cell[aria-pressed='false'] {
+  opacity: 0.35;
+}
+
+.paper__cell[aria-pressed='true'] {
+  border-color: var(--ink);
+}
+
+.paper__cell:disabled {
+  cursor: default;
+}
+
+.corners {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.corners__frame {
+  position: relative;
+  width: min(100%, 70dvh);
+  touch-action: none;
+  user-select: none;
+}
+
+.corners__frame img,
+.corners__frame svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius);
+}
+
+.corners__frame polygon {
+  fill: rgb(179 52 28 / 0.12);
+  stroke: var(--proof);
+  stroke-width: 0.004;
+}
+
+.corners__handle {
+  position: absolute;
+  width: 44px;
+  height: 44px;
+  margin: -22px 0 0 -22px;
+  border: 3px solid var(--proof);
+  border-radius: 50%;
+  background: rgb(255 255 255 / 0.35);
+  cursor: grab;
+  touch-action: none;
+}
+
+.corners__choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-5);
+}
+
+.corners__choices fieldset {
+  display: flex;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.corners__choices legend {
+  margin-bottom: var(--space-1);
+  font-weight: 600;
+}
+
+.corners__choices label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: 44px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .paper__drop-hint {
+    display: inline;
+  }
+}

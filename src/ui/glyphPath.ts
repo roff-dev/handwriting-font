@@ -1,4 +1,5 @@
-import type { Contour, Ring } from '../core/geometry';
+import { bounds, type Contour, type Ring } from '../core/geometry';
+import type { PadBox } from './pad/geometry';
 
 const n = (v: number) => Math.round(v * 10) / 10;
 
@@ -16,4 +17,11 @@ export function contourPathData(contours: Contour[]): string {
 
 export function ringPathData(rings: Ring[]): string {
   return rings.map((r) => r.map(([x, y], i) => `${i ? 'L' : 'M'}${n(x)} ${n(y)}`).join('') + 'Z').join('');
+}
+
+/** A cell's view: the writing box's full height (so a glyph keeps its place on the baseline), centred on the glyph. */
+export function cellViewBox(contours: Contour[], box: PadBox): string {
+  const b = bounds(contours), w = box.x1 - box.x0, h = box.y1 - box.y0;
+  const cx = Number.isFinite(b.x0) ? (b.x0 + b.x1) / 2 : (box.x0 + box.x1) / 2;
+  return `${cx - w / 2} ${-box.y1} ${w} ${h}`;
 }

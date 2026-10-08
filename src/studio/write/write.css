@@ -7,7 +7,8 @@
     'actions'
     'nudge'
     'finger'
-    'grid';
+    'grid'
+    'paper';
   align-content: start;
   justify-items: center;
   row-gap: var(--space-3);
@@ -88,6 +89,24 @@
   accent-color: var(--ink);
 }
 
+.write__paper {
+  grid-area: paper;
+  margin: 0;
+}
+
+.link-button {
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink-soft);
+  font: inherit;
+  font-size: 0.95rem;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  cursor: pointer;
+}
+
 .write__grid {
   grid-area: grid;
   max-width: none;
@@ -119,7 +138,8 @@
       'pad actions'
       'pad nudge'
       'pad finger'
-      'pad grid';
+      'pad grid'
+      'pad paper';
     column-gap: var(--space-5);
     justify-items: stretch;
   }
@@ -145,7 +165,8 @@
       'grid pad tester'
       'grid actions tester'
       'grid nudge tester'
-      'grid finger tester';
+      'grid finger tester'
+      'grid paper tester';
     column-gap: var(--space-8);
     justify-items: stretch;
     align-items: start;

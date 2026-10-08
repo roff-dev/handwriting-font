@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { ACCENT_MARKS, DIGITS, EXTRAS, LOWERCASE, PUNCTUATION, UPPERCASE } from '../../core/project/sets';
-import { bounds } from '../../core/geometry';
-import { contourPathData } from '../../ui/glyphPath';
+import { cellViewBox, contourPathData } from '../../ui/glyphPath';
 import { LETTER_BOX, PAIR_BOX } from '../../ui/pad/geometry';
 import { describe, display, isDone, sameSlot, sequence, slotKey, type Slot } from '../slots';
 import { useStudio } from '../store';
@@ -9,12 +8,6 @@ import './grid.css';
 
 type Group = { title: string; slots: Slot[] };
 
-/** The writing box's full height (so every glyph keeps its place against the baseline), centred on the glyph. */
-function cellViewBox(contours: Parameters<typeof bounds>[0], box: typeof LETTER_BOX) {
-  const b = bounds(contours), w = box.x1 - box.x0, h = box.y1 - box.y0;
-  const cx = Number.isFinite(b.x0) ? (b.x0 + b.x1) / 2 : (box.x0 + box.x1) / 2;
-  return `${cx - w / 2} ${-box.y1} ${w} ${h}`;
-}
 
 function groups(slots: Slot[]): Group[] {
   const of = (title: string, test: (s: Slot) => boolean) => ({ title, slots: slots.filter(test) });

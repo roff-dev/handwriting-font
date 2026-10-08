@@ -134,6 +134,12 @@ export function WriteTab() {
           </div>
           <p className="write__nudge" aria-live="polite">{hint ? 'Draw something first, or skip.' : ''}</p>
 
+          <p className="write__paper">
+            <button type="button" className="link-button" onClick={() => s.setTab('paper')}>
+              Prefer paper? Use a printed template
+            </button>
+          </p>
+
           {s.penSeen && (
             <label className="write__finger">
               <input type="checkbox" checked={s.fingerAllowed} onChange={(e) => s.allowFinger(e.target.checked)} />

@@ -15,6 +15,7 @@ export function MoreSheet({ open, onClose }: { open: boolean; onClose: () => voi
   const project = useStudio((s) => s.project);
   const setSettings = useStudio((s) => s.setSettings);
   const addPair = useStudio((s) => s.addPair);
+  const setTab = useStudio((s) => s.setTab);
   const [first, setFirst] = useState('t');
   const [second, setSecond] = useState('h');
   const [pairError, setPairError] = useState('');
@@ -85,6 +86,21 @@ export function MoreSheet({ open, onClose }: { open: boolean; onClose: () => voi
           <p className="sheet__error" id="pair-error" aria-live="polite">{pairError}</p>
           <p className="sheet__note">Doubled letters work well too: ll, ss, ee, oo, tt.</p>
         </fieldset>
+
+        <div className="sheet__paper">
+          <p className="option__title">Prefer paper?</p>
+          <p className="option__detail">Print a template, fill it in with a pen and take a photo of each page.</p>
+          <button
+            type="button"
+            className="button"
+            onClick={() => {
+              setTab('paper');
+              onClose();
+            }}
+          >
+            Import from paper
+          </button>
+        </div>
 
         <fieldset className="sheet__theme">
           <legend>Appearance</legend>
