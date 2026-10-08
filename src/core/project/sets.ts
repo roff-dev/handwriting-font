@@ -1,4 +1,4 @@
-import { MARKS } from '../glyphs/compose';
+import { MARKS } from '../glyphs/marks';
 
 export type SetId = 'standard' | 'extras' | 'accents' | 'variants' | 'pairs';
 

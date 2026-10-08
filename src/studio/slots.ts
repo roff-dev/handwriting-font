@@ -1,4 +1,4 @@
-import { MARKS } from '../core/glyphs/compose';
+import { MARKS } from '../core/glyphs/marks';
 import type { Project } from '../core/project/schema';
 import { characters, DIGITS, LOWERCASE, PUNCTUATION, SUGGESTED_PAIRS, UPPERCASE, VARIANT_PASS } from '../core/project/sets';
 

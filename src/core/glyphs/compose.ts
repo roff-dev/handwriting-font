@@ -3,18 +3,10 @@ import { fitRing } from '../ink/fit';
 import { orient } from '../ink/orient';
 import { unionRings } from '../ink/outline';
 import { mainInkBounds } from '../metrics/categories';
+import type { Mark } from './marks';
 
-/** The seven marks the user draws, keyed by their combining characters. */
-export const MARKS = {
-  '̀': 'grave',
-  '́': 'acute',
-  '̂': 'circumflex',
-  '̃': 'tilde',
-  '̈': 'diaeresis',
-  '̊': 'ring',
-  '̧': 'cedilla',
-} as const;
-export type Mark = keyof typeof MARKS;
+export { MARKS, type Mark } from './marks';
+
 
 export const ACCENTED = [...'ÀÁÂÃÄÅÇÈÉÊËÌÍÎÏÑÒÓÔÕÖÙÚÛÜÝŸàáâãäåçèéêëìíîïñòóôõöùúûüýÿ'];
 
