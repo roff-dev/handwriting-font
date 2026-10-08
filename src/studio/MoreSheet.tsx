@@ -1,3 +1,4 @@
+import { animate } from 'motion';
 import { useEffect, useRef, useState } from 'react';
 import { LOWERCASE, MAX_PAIRS, UPPERCASE, type SetId } from '../core/project/sets';
 import { useTheme, type ThemeChoice } from '../ui/theme';
@@ -21,11 +22,29 @@ export function MoreSheet({ open, onClose }: { open: boolean; onClose: () => voi
   const [pairError, setPairError] = useState('');
   const [theme, setTheme] = useTheme();
 
+  // The sheet slides in on a spring and out with a quick ease, from the bottom on phones and the right on
+  // wide screens; the dialog only closes once it's off screen. With reduced motion it fades.
   useEffect(() => {
     const d = dialog.current;
-    if (!d) return;
-    if (open && !d.open) d.showModal();
-    if (!open && d.open) d.close();
+    if (!d || (!open && !d.open)) return;
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const axis = matchMedia('(min-width: 700px)').matches ? 'x' : 'y';
+    // Reopened mid-exit, it turns back from where it is; from closed, it starts off screen (as the CSS has it).
+    const fresh = !d.open;
+    if (open && fresh) d.showModal();
+    const panel = reduced
+      ? animate(d, { [axis]: '0%', opacity: open ? [fresh ? 0 : null, 1] : 0 }, { duration: 0.15, [axis]: { duration: 0 } })
+      : open
+        ? animate(d, { [axis]: fresh ? ['100%', '0%'] : '0%', opacity: 1 }, { type: 'spring', stiffness: 380, damping: 36 })
+        : animate(d, { [axis]: '100%' }, { duration: 0.24, ease: [0.4, 0, 1, 1] });
+    const shade = d.animate({ opacity: open ? [0, 1] : [1, 0] }, { duration: reduced ? 150 : open ? 300 : 240, pseudoElement: '::backdrop', fill: 'forwards' });
+    let cancelled = false;
+    if (!open) panel.then(() => !cancelled && d.close());
+    return () => {
+      cancelled = true;
+      panel.stop();
+      shade.cancel();
+    };
   }, [open]);
 
   const sets = project.settings.sets;
@@ -41,7 +60,18 @@ export function MoreSheet({ open, onClose }: { open: boolean; onClose: () => voi
   };
 
   return (
-    <dialog ref={dialog} className="sheet" aria-labelledby="more-title" onClose={onClose} onClick={(e) => e.target === dialog.current && onClose()}>
+    <dialog
+      ref={dialog}
+      className="sheet"
+      aria-labelledby="more-title"
+      onClose={onClose}
+      onCancel={(e) => {
+        // Escape closes through the same exit animation as Done and the backdrop.
+        e.preventDefault();
+        onClose();
+      }}
+      onClick={(e) => e.target === dialog.current && onClose()}
+    >
       <div className="sheet__body">
         <div className="sheet__head">
           <h2 id="more-title">More characters</h2>

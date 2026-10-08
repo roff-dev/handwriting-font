@@ -186,15 +186,9 @@
   background: rgb(var(--shadow) / 0.35);
 }
 
+/* Parked off screen; MoreSheet slides it in and out. */
 .sheet[open] {
-  animation: sheet-in 0.32s var(--ease-out);
-}
-
-@keyframes sheet-in {
-  from {
-    translate: 0 40px;
-    opacity: 0;
-  }
+  transform: translateY(100%);
 }
 
 .sheet__body {
@@ -328,11 +322,8 @@
     border-radius: var(--radius) 0 0 var(--radius);
   }
 
-  @keyframes sheet-in {
-    from {
-      translate: 40px 0;
-      opacity: 0;
-    }
+  .sheet[open] {
+    transform: translateX(100%);
   }
 
   .sheet__body {
