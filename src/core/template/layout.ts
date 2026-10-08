@@ -4,11 +4,13 @@ import { ACCENT_MARKS } from '../project/sets';
 // points (1/72 inch), measured from the page's top-left corner, y down.
 
 export type PaperSize = 'a4' | 'letter';
+export const templateFileName = (size: PaperSize) => `handwriting-template-${size}.pdf`;
 export const PAPER: Record<PaperSize, { width: number; height: number; label: string }> = {
   a4: { width: 595.28, height: 841.89, label: 'A4' },
   letter: { width: 612, height: 792, label: 'US Letter' },
 };
 
+export const MARKER_DICTIONARY = 'ARUCO_MIP_36h12';
 /** A 6 × 6-bit ArUco marker plus its black border: 8 modules, about 16 mm across. */
 export const MARKER_MODULES = 8;
 export const MARKER_SIZE = 46;
@@ -17,12 +19,12 @@ const MARKER_INSET = 24;
 export const COLS = 6;
 export const ROWS = 8;
 const GRID_LEFT = 28.8;
-const GRID_TOP = 91.2;
-const GRID_BOTTOM = 86.4;
+const GRID_TOP = 80;
+const GRID_BOTTOM = 76;
 /** Gap between neighbouring box outlines, and the strip at the top of each box that holds its label. */
 const FRAME_GAP = 2;
-const LABEL_STRIP = 13;
-const WRITING_INSET = 6;
+const LABEL_STRIP = 11;
+const WRITING_INSET = 4;
 
 /** Font units shown in a box: from below the descender to above the cap height. */
 export const EM_TOP = 860;
@@ -92,7 +94,7 @@ export function cellBox(size: PaperSize, i: number): Box {
 /** Where the box's label sits (its baseline), inside the strip above the writing area. */
 export function labelOrigin(size: PaperSize, i: number): [number, number] {
   const f = cellFrame(size, i);
-  return [f.x + WRITING_INSET, f.y + 9.5];
+  return [f.x + WRITING_INSET, f.y + 8.5];
 }
 
 const unitsPerPoint = (b: Box) => (EM_TOP - EM_BOTTOM) / b.h;

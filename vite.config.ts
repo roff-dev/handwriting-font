@@ -2,8 +2,8 @@ import { resolve } from 'node:path';
 import type { Plugin } from 'vite';
 import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
-import { templateFileName, templatePdf } from './src/core/template/pdf';
-import type { PaperSize } from './src/core/template/layout';
+import { templatePdf } from './src/core/template/pdf';
+import { templateFileName, type PaperSize } from './src/core/template/layout';
 
 const page = (path: string) => resolve(import.meta.dirname, path);
 const SIZES: PaperSize[] = ['a4', 'letter'];
@@ -29,10 +29,34 @@ function templates(): Plugin {
   };
 }
 
+/**
+ * js-aruco2's files publish themselves on `this` (this.CV, this.AR) and have no exports, so as ES modules
+ * they'd see `this` as undefined. Run each inside one shared context object and export that instead.
+ */
+function arucoModules(): Plugin {
+  return {
+    name: 'js-aruco2-modules',
+    enforce: 'pre',
+    transform(code, id) {
+      if (!/js-aruco2\/src\/(cv|aruco)\.js(\?|$)/.test(id)) return;
+      // cv.js is imported first, so aruco.js never needs its require('./cv') fallback.
+      const body = code.replace("require('./cv').CV", 'undefined');
+      return { code: `const context = (globalThis.__jsAruco ??= {});
+(function () {
+${body}
+}).call(context);
+export default context;
+`, map: null };
+    },
+  };
+}
+
 export default defineConfig({
-  plugins: [react(), templates()],
+  plugins: [react(), templates(), arucoModules()],
+  // Served through the transform below rather than pre-bundled, so dev and build load it the same way.
+  optimizeDeps: { exclude: ['js-aruco2'] },
   // Module workers, so their dynamic imports (the WOFF2 encoder) become separate, lazily fetched chunks.
-  worker: { format: 'es' },
+  worker: { format: 'es', plugins: () => [arucoModules()] },
   build: {
     target: 'es2022',
     rolldownOptions: {

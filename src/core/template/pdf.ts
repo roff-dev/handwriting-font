@@ -1,8 +1,6 @@
-import aruco from 'js-aruco2';
+import aruco from '../../vendor/aruco';
 import { MARKS } from '../glyphs/marks';
-import { cellBox, cellFrame, GUIDES, labelOrigin, MARKER_MODULES, MARKER_SIZE, markerId, markerOrigins, PAGES, PAPER, unitToPage, type Cell, type PaperSize } from './layout';
-
-export const MARKER_DICTIONARY = 'ARUCO_MIP_36h12';
+import { cellBox, cellFrame, GUIDES, labelOrigin, MARKER_DICTIONARY, MARKER_MODULES, MARKER_SIZE, markerId, markerOrigins, PAGES, PAPER, unitToPage, type Cell, type PaperSize } from './layout';
 
 const PAGE_TITLES = ['Lowercase, figures and punctuation', 'Capitals, symbols and accent marks', 'Second and third versions of your most used letters'];
 const INSTRUCTIONS = 'Use a dark pen. One character per box, sitting on the lowest dotted line.';
@@ -86,4 +84,3 @@ export function templatePdf(size: PaperSize): Uint8Array {
   return Uint8Array.from(pdf, (c) => c.charCodeAt(0));
 }
 
-export const templateFileName = (size: PaperSize) => `handwriting-template-${size}.pdf`;

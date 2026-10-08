@@ -1,5 +1,6 @@
 // js-aruco2 ships without type definitions. This covers the dictionary and detector the templates use.
-declare module 'js-aruco2' {
+declare module 'js-aruco2/src/cv.js';
+declare module 'js-aruco2/src/aruco.js' {
   type Corner = { x: number; y: number };
   const aruco: {
     AR: {
