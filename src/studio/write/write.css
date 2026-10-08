@@ -93,6 +93,11 @@
   max-width: none;
 }
 
+/* The live paragraph only has room beside the pad on wide screens; phones have the Test tab. */
+.write__tester {
+  display: none;
+}
+
 .flight {
   position: fixed;
   z-index: 20;
@@ -136,11 +141,11 @@
   .write {
     grid-template-columns: 320px minmax(0, 560px) minmax(0, 1fr);
     grid-template-areas:
-      'grid prompt .'
-      'grid pad .'
-      'grid actions .'
-      'grid nudge .'
-      'grid finger .';
+      'grid prompt tester'
+      'grid pad tester'
+      'grid actions tester'
+      'grid nudge tester'
+      'grid finger tester';
     column-gap: var(--space-8);
     justify-items: stretch;
     align-items: start;
@@ -156,6 +161,13 @@
 
   .write__pad {
     width: 100%;
+  }
+
+  .write__tester {
+    display: block;
+    grid-area: tester;
+    grid-row: 2 / span 4;
+    align-self: start;
   }
 
   .write--wide {

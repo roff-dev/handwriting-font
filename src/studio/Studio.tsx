@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { characters } from '../core/project/sets';
 import '../ui/button.css';
 import { startEngine } from './engine';
+import { startFontPipeline } from './font';
+import { TestTab } from './test/TestTab';
 import { MoreSheet } from './MoreSheet';
 import { restore, startAutosave } from './persistence';
 import { useStudio, type Tab } from './store';
@@ -43,6 +45,7 @@ export function Studio() {
       if (r && r.drawn) setToast(`Welcome back. ${r.drawn} of ${r.total} drawn.`);
       startAutosave();
       startEngine();
+      startFontPipeline();
     });
   }, []);
 
@@ -82,7 +85,9 @@ export function Studio() {
         <section id="panel-write" role="tabpanel" aria-label="Write" hidden={tab !== 'write'}>
           {tab === 'write' && <WriteTab />}
         </section>
-        <section id="panel-test" role="tabpanel" aria-label="Test" hidden={tab !== 'test'} />
+        <section id="panel-test" role="tabpanel" aria-label="Test" hidden={tab !== 'test'}>
+          {tab === 'test' && <TestTab />}
+        </section>
         <section id="panel-export" role="tabpanel" aria-label="Export" hidden={tab !== 'export'} />
       </main>
 

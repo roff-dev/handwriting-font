@@ -5,6 +5,8 @@ import { Pad } from '../../ui/pad/Pad';
 import { LETTER_BOX, PAIR_BOX } from '../../ui/pad/geometry';
 import { describe, prompt, slotKey } from '../slots';
 import { useStudio } from '../store';
+import { Preview } from '../test/Preview';
+import { SAMPLE } from '../test/TestTab';
 import { Flight } from './Flight';
 import { GlyphGrid } from './GlyphGrid';
 import './write.css';
@@ -136,6 +138,10 @@ export function WriteTab() {
 
       <div className="write__grid">
         <GlyphGrid />
+      </div>
+
+      <div className="write__tester" aria-label="Your font so far">
+        <Preview text={SAMPLE} size={44} features={{ variants: true, pairs: true, kerning: true }} />
       </div>
 
       <Flight pad={pad} />
