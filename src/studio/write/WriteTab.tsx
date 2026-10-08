@@ -118,9 +118,9 @@ export function WriteTab() {
           </div>
 
           <div className="write__actions">
-            <button type="button" className="button button--quiet" onClick={s.undo} disabled={!s.past.length} aria-keyshortcuts="Control+Z Meta+Z">
+            <button type="button" className="button button--quiet" onClick={s.undo} disabled={!s.past.length} aria-label="Undo" aria-keyshortcuts="Control+Z Meta+Z">
               <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M8 5 3.5 9.5 8 14M4 9.5h7.5a4.5 4.5 0 0 1 0 9H10" /></svg>
-              Undo
+              <span className="write__undo-label">Undo</span>
             </button>
             <button type="button" className="button button--quiet" onClick={s.clear} disabled={!draft.length}>
               Clear

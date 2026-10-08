@@ -102,7 +102,7 @@
 }
 
 .steps {
-  padding: var(--space-8) var(--gutter) calc(var(--space-9) + env(safe-area-inset-bottom));
+  padding: var(--space-8) var(--gutter);
   border-top: 1px solid color-mix(in srgb, var(--ink) 12%, transparent);
 }
 
@@ -144,6 +144,11 @@
   max-width: 34ch;
   margin: var(--space-1) 0 0;
   color: var(--ink-soft);
+}
+
+/* Room for the fixed call to action, so it never covers the footer. */
+.home .site-footer {
+  padding-bottom: calc(var(--space-9) + env(safe-area-inset-bottom));
 }
 
 /* On phones the call to action sits within thumb reach at the bottom of the screen. */
@@ -194,6 +199,10 @@
 
   .cta-bar {
     display: none;
+  }
+
+  .home .site-footer {
+    padding-bottom: var(--space-6);
   }
 
   .home__bar {

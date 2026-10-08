@@ -277,6 +277,21 @@
   font-size: 0.9rem;
 }
 
+.sheet__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-5);
+  order: 10;
+}
+
+.sheet__links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--ink-soft);
+  text-underline-offset: 0.2em;
+}
+
 .sheet__theme {
   display: flex;
   flex-wrap: wrap;

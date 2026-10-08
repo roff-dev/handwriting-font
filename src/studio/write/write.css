@@ -66,6 +66,21 @@
   min-width: 7.5rem;
 }
 
+/* The narrowest phones: Undo keeps its icon (and its name for screen readers), the rest tighten up. */
+@media (max-width: 359px) {
+  .write__undo-label {
+    display: none;
+  }
+
+  .write__actions .button--quiet {
+    padding: 0 var(--space-2);
+  }
+
+  .write__next {
+    min-width: 0;
+  }
+}
+
 .write__nudge {
   grid-area: nudge;
   margin: 0;

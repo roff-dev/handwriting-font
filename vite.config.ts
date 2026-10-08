@@ -52,6 +52,8 @@ export default context;
 }
 
 export default defineConfig({
+  // Separate pages, no single-page fallback: an unknown address gets the 404 page, as on Cloudflare Pages.
+  appType: 'mpa',
   plugins: [react(), templates(), arucoModules()],
   // Served through the transform below rather than pre-bundled, so dev and build load it the same way.
   optimizeDeps: { exclude: ['js-aruco2'] },
@@ -63,6 +65,9 @@ export default defineConfig({
       input: {
         home: page('index.html'),
         studio: page('studio/index.html'),
+        privacy: page('privacy/index.html'),
+        terms: page('terms/index.html'),
+        notFound: page('404.html'),
       },
     },
   },

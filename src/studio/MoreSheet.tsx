@@ -102,6 +102,12 @@ export function MoreSheet({ open, onClose }: { open: boolean; onClose: () => voi
           </button>
         </div>
 
+        <nav className="sheet__links" aria-label="About this site">
+          <a href="/privacy/">Privacy</a>
+          <a href="/terms/">Terms</a>
+          <a href={import.meta.env.VITE_PORTFOLIO_URL}>Built by Kieron</a>
+        </nav>
+
         <fieldset className="sheet__theme">
           <legend>Appearance</legend>
           {(['system', 'light', 'dark'] as ThemeChoice[]).map((t) => (

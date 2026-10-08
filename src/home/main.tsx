@@ -4,6 +4,7 @@ import '../styles/fonts.css';
 import '../styles/tokens.css';
 import '../styles/base.css';
 import '../ui/button.css';
+import '../ui/footer.css';
 import './home.css';
 import type { Stroke } from '../core/ink/strokes';
 import { emptyProject } from '../core/project/schema';
