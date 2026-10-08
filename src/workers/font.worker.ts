@@ -2,6 +2,8 @@ import { expose, transfer } from 'comlink';
 import { assemble, type ProjectOutlines } from '../core/assemble';
 import { buildFont, type BuiltFont } from '../core/font/build';
 import { fontFaceCss } from '../core/font/css';
+import { layoutText } from '../core/font/image';
+import { layoutFont, type Features } from '../core/font/layout';
 import { makeMobileconfig } from '../core/font/mobileconfig';
 import { toTrueType } from '../core/font/truetype';
 import type { FontSpec } from '../core/font/types';
@@ -44,6 +46,12 @@ const api = {
 
   css() {
     return fontFaceCss(latest().spec.family);
+  },
+
+  /** Typed text laid out in the font, as glyph paths ready for SVG or a canvas. */
+  textImage(text: string, features: Features) {
+    const { spec } = latest();
+    return layoutText(text, layoutFont(spec), new Map(spec.glyphs.map((g) => [g.name, g.contours])), features);
   },
 };
 
