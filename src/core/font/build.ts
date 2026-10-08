@@ -112,7 +112,9 @@ export function buildFont(spec: FontSpec): BuiltFont {
   if (gsub) tables.set('GSUB', gsub);
 
   const k = spec.kerning;
-  if (k) {
+  // A font with nothing to kern (a few letters drawn so far) gets no kerning tables: an empty legacy
+  // kern subtable makes Firefox's sanitiser warn and discard it.
+  if (k && k.values.some((v) => v !== 0)) {
     const byId = (m: Map<string, number>) => new Map([...m].filter(([name]) => ids.has(name)).map(([name, c]) => [id(name), c]));
     const classes: ClassKerning = { left: byId(k.left), right: byId(k.right), leftCount: k.leftCount, rightCount: k.rightCount, values: k.values };
     tables.set('GPOS', makeGpos(classes));
@@ -121,7 +123,7 @@ export function buildFont(spec: FontSpec): BuiltFont {
       const v = k.values[(k.left.get(l) ?? 0) * k.rightCount + (k.right.get(r) ?? 0)]!;
       if (v && ids.has(l) && ids.has(r)) legacy.push([id(l), id(r), v]);
     }
-    tables.set('kern', makeLegacyKern(legacy));
+    if (legacy.length) tables.set('kern', makeLegacyKern(legacy));
   }
 
   return {
