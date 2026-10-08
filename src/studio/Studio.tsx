@@ -3,6 +3,7 @@ import { characters } from '../core/project/sets';
 import '../ui/button.css';
 import { startEngine } from './engine';
 import { startFontPipeline } from './font';
+import { ExportTab } from './export/ExportTab';
 import { TestTab } from './test/TestTab';
 import { MoreSheet } from './MoreSheet';
 import { restore, startAutosave } from './persistence';
@@ -88,7 +89,9 @@ export function Studio() {
         <section id="panel-test" role="tabpanel" aria-label="Test" hidden={tab !== 'test'}>
           {tab === 'test' && <TestTab />}
         </section>
-        <section id="panel-export" role="tabpanel" aria-label="Export" hidden={tab !== 'export'} />
+        <section id="panel-export" role="tabpanel" aria-label="Export" hidden={tab !== 'export'}>
+          {tab === 'export' && <ExportTab />}
+        </section>
       </main>
 
       <Tabs placement="bottom" />

@@ -1,0 +1,52 @@
+/* Sizes are in cqw of the wrapper, so the poster scales like the 1200 px image it previews. */
+.specimen-frame {
+  container-type: inline-size;
+  width: 100%;
+}
+
+.specimen {
+  display: flex;
+  flex-direction: column;
+  aspect-ratio: 4 / 5;
+  margin: 0;
+  padding: 8cqw;
+  overflow: hidden;
+  border-radius: var(--radius);
+  background: var(--sheet);
+  color: var(--ink);
+  box-shadow: 0 1px 0 rgb(var(--shadow) / 0.06), 0 24px 60px -32px rgb(var(--shadow) / 0.5);
+}
+
+:where(.specimen) p {
+  margin: 0;
+}
+
+.specimen__hero {
+  font-size: 43cqw;
+  line-height: 0.95;
+  margin-bottom: 4cqw;
+}
+
+.specimen__waterfall p {
+  line-height: 1.15;
+  margin-bottom: 0.35em;
+}
+
+.specimen__line {
+  font-size: 8cqw;
+  line-height: 1.2;
+  margin-top: 3cqw;
+}
+
+.specimen__double {
+  text-decoration: underline 0.4cqw var(--proof);
+  text-underline-offset: 1.6cqw;
+}
+
+.specimen__colophon {
+  margin-top: auto;
+  font-family: var(--font-mono);
+  font-size: 2.35cqw;
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
