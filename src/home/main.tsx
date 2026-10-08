@@ -3,12 +3,14 @@ import { createRoot } from 'react-dom/client';
 import type { Stroke } from '../core/ink/strokes';
 import { emptyProject } from '../core/project/schema';
 import { loadProject, saveProject } from '../ui/projectDb';
+import { startBackdrop } from '../ui/backdrop';
 import { applyTheme } from '../ui/theme';
 import { HandFont } from './handFont';
 import { applyHand, splitHeadline } from './headline';
 import { HOME_LETTERS, HomePad } from './HomePad';
 
 applyTheme();
+startBackdrop();
 
 const CTA_AFTER = 3;
 const letters = splitHeadline(document.getElementById('headline')!);

@@ -4,6 +4,7 @@ import type { Contour, Point } from '../../core/geometry';
 import type { BoxResult, Placement } from '../../core/photo/extract';
 import type { Photo } from '../../core/photo/image';
 import { COLS, PAPER, ROWS, templateFileName, type Cell, type PaperSize } from '../../core/template/layout';
+import { holdBackdrop } from '../../ui/backdrop';
 import { cellViewBox, contourPathData } from '../../ui/glyphPath';
 import { LETTER_BOX } from '../../ui/pad/geometry';
 import type { PhotoWorkerApi } from '../../workers/photo.worker';
@@ -52,7 +53,7 @@ export function PaperImport() {
 
   const drawn = (c: Cell) => Boolean(project.glyphs[c.ch]?.[c.version]);
 
-  const read = async (place: Placement) => {
+  const read = (place: Placement) => holdBackdrop(async () => {
     setView({ kind: 'reading', place, boxes: [] });
     const boxes = await photoWorker().read(place, proxy((box: BoxResult) => setView((v) => (v.kind === 'reading' ? { ...v, boxes: [...v.boxes, box] } : v))));
     if (boxes.every((b) => !b.contours)) {
@@ -61,10 +62,9 @@ export function PaperImport() {
     }
     // Boxes for characters already drawn on the pad start unticked, so a photo never quietly replaces them.
     setView({ kind: 'review', place, boxes, use: new Set(boxes.filter((b) => b.contours && !drawn(b.cell)).map((b) => b.index)) });
-  };
+  });
 
-  const choose = async (file: File | undefined) => {
-    if (!file) return;
+  const choose = (file: File | undefined) => file && holdBackdrop(async () => {
     setView({ kind: 'reading', place: null, boxes: [] });
     let decoded: { photo: Photo; preview: string };
     try {
@@ -82,7 +82,7 @@ export function PaperImport() {
       return;
     }
     await read(found);
-  };
+  });
 
   const byCorners = async (size: PaperSize, page: number, corners: Point[]) => read(await photoWorker().byCorners(size, page, corners));
 

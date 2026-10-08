@@ -65,3 +65,54 @@ h1 {
     transition-duration: 150ms !important;
   }
 }
+
+/*
+ * Behind every page: a slow wash of light and ink (src/ui/backdrop.ts), fading in over the plain paper once
+ * it's ready, and over it the paper's grain, SVG turbulence like the pad's but coarser and stronger. The grain is CSS so it's there
+ * from the first paint and wherever WebGL isn't. Both sit under everything and take no clicks. 100lvh, the
+ * tallest the viewport gets, so neither resizes while a phone's toolbars slide away.
+ */
+.backdrop,
+body::after {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: -1;
+  height: 100lvh;
+  pointer-events: none;
+}
+
+.backdrop {
+  opacity: 0;
+  transition: opacity 1.2s var(--ease-out);
+}
+
+.backdrop--on {
+  opacity: 1;
+}
+
+:root {
+  --grain: 0.16;
+}
+
+/* The same speckle reads twice as loud on the night desk. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --grain: 0.08;
+  }
+}
+
+:root[data-theme='dark'] {
+  --grain: 0.08;
+}
+
+body::after {
+  content: '';
+  opacity: var(--grain);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='3' intercept='-1'/%3E%3CfeFuncG type='linear' slope='3' intercept='-1'/%3E%3CfeFuncB type='linear' slope='3' intercept='-1'/%3E%3CfeFuncA type='linear' slope='0' intercept='1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  body::after {
+    content: none;
+  }
+}

@@ -2,7 +2,6 @@
   --bar-height: 56px;
   --tabs-height: 64px;
   min-height: 100dvh;
-  background: var(--paper);
 }
 
 .studio__bar {

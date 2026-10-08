@@ -40,6 +40,6 @@ npm run bench        # times the outline and font-build pipeline at 1×, 4× and
 |---|---|
 | [Instrument Serif](https://github.com/Instrument/instrument-serif), [Bricolage Grotesque](https://github.com/ateliertriay/bricolage), [Martian Mono](https://github.com/evilmartians/mono) (via Fontsource) | SIL Open Font License 1.1 |
 | [React](https://react.dev), [Motion](https://motion.dev), [Zustand](https://github.com/pmndrs/zustand), [opentype.js](https://github.com/opentypejs/opentype.js), [perfect-freehand](https://github.com/steveruizok/perfect-freehand), [fit-curve](https://github.com/soswow/fit-curve), [fflate](https://github.com/101arrowz/fflate), [js-aruco2](https://github.com/damianofalcioni/js-aruco2) | MIT |
-| [Comlink](https://github.com/GoogleChromeLabs/comlink), [idb-keyval](https://github.com/jakearchibald/idb-keyval), [brotli-wasm](https://github.com/httptoolkit/brotli-wasm) | Apache 2.0 |
+| [Comlink](https://github.com/GoogleChromeLabs/comlink), [Paper Shaders](https://github.com/paper-design/shaders), [idb-keyval](https://github.com/jakearchibald/idb-keyval), [brotli-wasm](https://github.com/httptoolkit/brotli-wasm) | Apache 2.0 |
 | [Clipper2 (TypeScript port)](https://github.com/countertype/clipper2-ts) | Boost Software License 1.0 |
 | Test fixtures: [Hershey fonts](https://github.com/techninja/hersheytextjs) stroke data, checked with [HarfBuzz](https://github.com/harfbuzz/harfbuzzjs) and [fontkit](https://github.com/foliojs/fontkit) | MIT |
