@@ -97,13 +97,13 @@ export function MoreSheet({ open, onClose }: { open: boolean; onClose: () => voi
         <fieldset className="sheet__pair">
           <legend>Add your own pair</legend>
           <div className="sheet__pair-row">
-            <label>
+            <label className="sheet__select">
               <span className="visually-hidden">First letter</span>
               <select value={first} onChange={(e) => setFirst(e.target.value)}>
                 {[...LOWERCASE, ...UPPERCASE].map((c) => <option key={c}>{c}</option>)}
               </select>
             </label>
-            <label>
+            <label className="sheet__select">
               <span className="visually-hidden">Second letter</span>
               <select value={second} onChange={(e) => setSecond(e.target.value)}>
                 {LOWERCASE.map((c) => <option key={c}>{c}</option>)}

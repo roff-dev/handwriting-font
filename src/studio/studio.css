@@ -257,19 +257,52 @@
 .sheet__pair-row {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: var(--space-2);
 }
 
+/*
+ * Drawn by us rather than the browser: Safari otherwise keeps its own grey menu style and sets the height
+ * itself, so the menus sat on the text baseline and didn't line up with the button. The chevron is a mask,
+ * so it takes the ink colour in both themes.
+ */
+.sheet__select {
+  position: relative;
+  display: block;
+}
+
+.sheet__select::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: var(--space-3);
+  width: 12px;
+  height: 12px;
+  translate: 0 -50%;
+  background: var(--ink);
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2.5 4.5 6 8l3.5-3.5' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat;
+  pointer-events: none;
+}
+
 .sheet select {
-  min-height: 44px;
+  display: block;
+  height: 44px;
   min-width: 4.5rem;
-  padding: 0 var(--space-3);
+  margin: 0;
+  padding: 0 calc(var(--space-3) + 18px) 0 var(--space-4);
   border: 1px solid color-mix(in srgb, var(--ink) 22%, transparent);
   border-radius: 10px;
   background: var(--paper);
   color: var(--ink);
   font: inherit;
   font-size: 1.1rem;
+  line-height: 1;
+  appearance: none;
+  cursor: pointer;
+}
+
+.sheet select:hover {
+  background: color-mix(in srgb, var(--ink) 6%, var(--paper));
 }
 
 .sheet__error {
