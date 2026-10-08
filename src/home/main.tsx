@@ -1,11 +1,5 @@
 import { StrictMode, useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import '../styles/fonts.css';
-import '../styles/tokens.css';
-import '../styles/base.css';
-import '../ui/button.css';
-import '../ui/footer.css';
-import './home.css';
 import type { Stroke } from '../core/ink/strokes';
 import { emptyProject } from '../core/project/schema';
 import { loadProject, saveProject } from '../ui/projectDb';
