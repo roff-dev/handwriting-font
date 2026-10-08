@@ -18,7 +18,7 @@ const kindOf = (t: string): PointerKind => (t === 'pen' || t === 'touch' ? t : '
 /**
  * Pointer handling for the pad. Positions come from coalesced events where the browser has them (every
  * sample the hardware produced, not one per frame); identity comes from the parent event, because Safari
- * 18.2's coalesced events lack pointerId. Predicted events only lengthen the live tail and are never kept.
+ * 18.2's coalesced events lack pointerId. Predicted events (pen and touch only) lengthen the live tail and are never kept.
  */
 export function usePointerInk(target: React.RefObject<HTMLElement | null>, options: Options) {
   const opts = useRef(options);
@@ -57,8 +57,10 @@ export function usePointerInk(target: React.RefObject<HTMLElement | null>, optio
       if (!active || e.pointerId !== active.id) return;
       const events = e.getCoalescedEvents?.() ?? [];
       for (const c of events.length ? events : [e]) sample(c, active.rect, active.t0, active.live.points);
+      // Prediction hides touchscreen and pen latency. Chromium predicts only on some mouse moves, so with a
+      // mouse the tail would jump ahead of the cursor and snap back; a mouse doesn't need it anyway.
       active.live.predicted = [];
-      for (const p of e.getPredictedEvents?.() ?? []) sample(p, active.rect, active.t0, active.live.predicted);
+      if (e.pointerType !== 'mouse') for (const p of e.getPredictedEvents?.() ?? []) sample(p, active.rect, active.t0, active.live.predicted);
       opts.current.onLive(active.live);
     };
 
