@@ -10,7 +10,8 @@
     "lint": "eslint .",
     "test": "vitest run",
     "e2e": "vite build && playwright test",
-    "bench": "node scripts/bench.ts"
+    "bench": "node scripts/bench.ts",
+    "assets": "node scripts/make-assets.ts"
   },
   "dependencies": {
     "@countertype/clipper2-ts": "1.5.4",

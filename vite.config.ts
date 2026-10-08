@@ -1,9 +1,10 @@
 import { resolve } from 'node:path';
-import type { Plugin } from 'vite';
+import { loadEnv, type Plugin } from 'vite';
 import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 import { templatePdf } from './src/core/template/pdf';
 import { templateFileName, type PaperSize } from './src/core/template/layout';
+import { siteMeta } from './scripts/site-meta';
 
 const page = (path: string) => resolve(import.meta.dirname, path);
 const SIZES: PaperSize[] = ['a4', 'letter'];
@@ -51,10 +52,10 @@ export default context;
   };
 }
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   // Separate pages, no single-page fallback: an unknown address gets the 404 page, as on Cloudflare Pages.
   appType: 'mpa',
-  plugins: [react(), templates(), arucoModules()],
+  plugins: [react(), templates(), arucoModules(), siteMeta(loadEnv(mode, import.meta.dirname, 'VITE_').VITE_SITE_URL)],
   // Served through the transform below rather than pre-bundled, so dev and build load it the same way.
   optimizeDeps: { exclude: ['js-aruco2'] },
   // Module workers, so their dynamic imports (the WOFF2 encoder) become separate, lazily fetched chunks.
@@ -74,4 +75,4 @@ export default defineConfig({
   test: {
     include: ['tests/unit/**/*.test.ts'],
   },
-});
+}));
