@@ -72,8 +72,16 @@ export function GlyphGrid() {
   };
 
   useEffect(() => {
-    const cell = list.current?.querySelector<HTMLElement>(`[data-slot="${CSS.escape(slotKey(cursor))}"]`);
-    cell?.scrollIntoView({ block: 'nearest', inline: 'center', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+    const box = list.current, cell = box?.querySelector<HTMLElement>(`[data-slot="${CSS.escape(slotKey(cursor))}"]`);
+    if (!box || !cell) return;
+    // Scroll the strip alone. scrollIntoView would scroll the page too, to bring the strip on screen,
+    // pushing the prompt off the top of a short phone.
+    const b = box.getBoundingClientRect(), c = cell.getBoundingClientRect();
+    box.scrollTo({
+      left: box.scrollLeft + c.left - b.left - (b.width - c.width) / 2,
+      top: box.scrollTop + (c.top < b.top ? c.top - b.top : c.bottom > b.bottom ? c.bottom - b.bottom : 0),
+      behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+    });
   }, [cursor]);
 
   return (
