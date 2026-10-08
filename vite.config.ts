@@ -6,6 +6,8 @@ const page = (path: string) => resolve(import.meta.dirname, path);
 
 export default defineConfig({
   plugins: [react()],
+  // Module workers, so their dynamic imports (the WOFF2 encoder) become separate, lazily fetched chunks.
+  worker: { format: 'es' },
   build: {
     target: 'es2022',
     rolldownOptions: {

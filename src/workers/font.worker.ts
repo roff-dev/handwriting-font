@@ -8,6 +8,7 @@ import { makeMobileconfig } from '../core/font/mobileconfig';
 import { toTrueType } from '../core/font/truetype';
 import type { FontSpec } from '../core/font/types';
 import { toWoff } from '../core/font/woff';
+import { toWoff2 } from '../core/font/woff2';
 
 let last: { spec: FontSpec; built: BuiltFont } | undefined;
 
@@ -27,10 +28,23 @@ const api = {
     return transfer({ otf, chars, offLine: [...offLine], kerningPairs, glyphCount: built.glyphOrder.length }, [otf]);
   },
 
+  otf() {
+    const otf = latest().built.otf.slice(0);
+    return transfer(otf, [otf]);
+  },
+
   ttf() {
     const { built } = latest();
     const ttf = toTrueType(built.otf, built.outlines);
     return transfer(ttf, [ttf]);
+  },
+
+  /** WOFF2 with a Brotli encoder compiled to WebAssembly, fetched the first time someone asks for it. */
+  async woff2() {
+    const { built } = latest();
+    const brotli = await (await import('brotli-wasm')).default;
+    const woff2 = toWoff2(toTrueType(built.otf, built.outlines), (data) => brotli.compress(data, { quality: 11 }));
+    return transfer(woff2, [woff2.buffer]);
   },
 
   woff() {

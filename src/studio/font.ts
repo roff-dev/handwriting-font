@@ -19,9 +19,10 @@ type LiveFont = {
   failed: boolean;
   builtAt: number;
   kerningPairs: number;
+  glyphCount: number;
 };
 
-export const useLiveFont = create<LiveFont>(() => ({ family: null, chars: new Set(), building: false, failed: false, builtAt: 0, kerningPairs: 0 }));
+export const useLiveFont = create<LiveFont>(() => ({ family: null, chars: new Set(), building: false, failed: false, builtAt: 0, kerningPairs: 0, glyphCount: 0 }));
 
 let worker: Remote<FontWorkerApi> | undefined;
 export const fontWorker = () =>
@@ -61,32 +62,76 @@ export function projectOutlines(project: Project, outlines: Record<string, Conto
 
 let generation = 0;
 let previous: FontFace | null = null;
+let timer: ReturnType<typeof setTimeout> | undefined;
+let inFlight: Promise<boolean> | null = null;
+/** The project object the newest successful build was made from. */
+let builtFrom: Project | null = null;
 
-async function rebuild() {
+function rebuild(): Promise<boolean> {
+  inFlight = build().finally(() => (inFlight = null));
+  return inFlight;
+}
+
+async function build(): Promise<boolean> {
   const { project, outlines } = useStudio.getState();
   const input = projectOutlines(project, outlines);
-  if (!input || !input.glyphs.size) return;
+  if (!input || !input.glyphs.size) return false;
   const mine = ++generation;
   useLiveFont.setState({ building: true });
   try {
     const result = await fontWorker().build(input);
-    if (mine !== generation) return;
+    if (mine !== generation) return false;
     const family = `HFM Live ${mine}`;
     const face = new FontFace(family, result.otf);
     await face.load();
-    if (mine !== generation) return;
+    if (mine !== generation) return false;
     document.fonts.add(face);
     if (previous) document.fonts.delete(previous);
     previous = face;
-    useLiveFont.setState({ family, chars: new Set(result.chars), building: false, failed: false, builtAt: performance.now(), kerningPairs: result.kerningPairs });
+    builtFrom = project;
+    useLiveFont.setState({ family, chars: new Set(result.chars), building: false, failed: false, builtAt: performance.now(), kerningPairs: result.kerningPairs, glyphCount: result.glyphCount });
+    return true;
   } catch {
     if (mine === generation) useLiveFont.setState({ building: false, failed: true });
+    return false;
   }
+}
+
+/** Resolves once every drawn glyph has its outline back from the workers (just after opening a project, they don't yet). */
+function outlinesReady(timeoutMs = 60_000): Promise<void> {
+  const ready = () => {
+    const { project, outlines } = useStudio.getState();
+    return projectOutlines(project, outlines) !== null;
+  };
+  if (ready()) return Promise.resolve();
+  return new Promise((resolve) => {
+    const stop = useStudio.subscribe(() => {
+      if (!ready()) return;
+      stop();
+      clearTimeout(giveUp);
+      resolve();
+    });
+    const giveUp = setTimeout(() => {
+      stop();
+      resolve();
+    }, timeoutMs);
+  });
+}
+
+/**
+ * Make sure the worker holds a build of the current project before exporting from it: skip the debounce
+ * and build now if anything changed since the last one.
+ */
+export async function freshFont(): Promise<boolean> {
+  await outlinesReady();
+  clearTimeout(timer);
+  if (inFlight) await inFlight;
+  if (builtFrom === useStudio.getState().project) return true;
+  return rebuild();
 }
 
 /** Rebuild the live font shortly after drawings, outlines or settings change. The old font stays up meanwhile. */
 export function startFontPipeline() {
-  let timer: ReturnType<typeof setTimeout> | undefined;
   const schedule = () => {
     clearTimeout(timer);
     timer = setTimeout(rebuild, REBUILD_DELAY);
