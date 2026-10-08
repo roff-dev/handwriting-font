@@ -7,6 +7,7 @@ import { ExportTab } from './export/ExportTab';
 import { PaperImport } from './paper/PaperImport';
 import { TestTab } from './test/TestTab';
 import { MoreSheet } from './MoreSheet';
+import { SidebarToggleIcon } from './SidebarToggleIcon';
 import { restore, startAutosave } from './persistence';
 import { useStudio, type Tab } from './store';
 import { WriteTab } from './write/WriteTab';
@@ -83,8 +84,8 @@ export function Studio() {
         <p className="studio__progress" aria-label={`${drawn} of ${chars.length} characters drawn`}>
           {drawn} of {chars.length}
         </p>
-        <button type="button" className="button button--quiet studio__more" aria-haspopup="dialog" onClick={() => setMoreOpen(true)}>
-          More
+        <button type="button" className="button button--quiet studio__more" aria-label="More" aria-haspopup="dialog" onClick={() => setMoreOpen(true)}>
+          <SidebarToggleIcon isOpen={moreOpen} />
         </button>
       </header>
 

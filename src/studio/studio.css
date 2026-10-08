@@ -37,6 +37,20 @@
   color: var(--ink-soft);
 }
 
+.studio__more {
+  min-width: 44px;
+  padding: 0 var(--space-2);
+}
+
+/* The panel's side matches the sheet's, which slides in from the right. The cut-out is the bar's paper. */
+.sidebar-icon {
+  scale: -1 1;
+}
+
+.sidebar-icon__panel {
+  fill: var(--paper);
+}
+
 .studio__banner {
   margin: 0;
   padding: var(--space-3) var(--space-4);
