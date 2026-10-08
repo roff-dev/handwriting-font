@@ -45,9 +45,15 @@
   margin-top: var(--space-3);
 }
 
+/*
+ * Upright phones: the pad gives up height so the strip is in view on arrival, while the browser's toolbars
+ * are still showing (svh is the viewport with them expanded). Around the pad: the bar and tabs, the prompt
+ * (3.6em), the buttons (44px), the strip (64px), the main padding, five row gaps and a gap above the tabs.
+ * Below 260px it would be too cramped to write in, so the shortest phones scroll a little instead.
+ */
 .write__pad {
   grid-area: pad;
-  width: min(100%, 62dvh);
+  width: min(100%, 62svh, max(260px, calc(100svh - var(--bar-height) - var(--tabs-height) - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 3.6em - 44px - 64px - 7 * var(--space-3))));
 }
 
 .write--wide .write__pad {
@@ -85,10 +91,10 @@
   }
 }
 
+/* Takes no room until it has something to say; it only speaks after a tap, so the shift is expected. */
 .write__nudge {
   grid-area: nudge;
   margin: 0;
-  min-height: 1.4em;
   color: var(--proof);
   font-size: 0.9rem;
 }
