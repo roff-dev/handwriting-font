@@ -1,10 +1,12 @@
 import { startBackdrop } from '../ui/backdrop';
+import { limitPageTransitions } from '../ui/pageTransition';
 import { applyTheme } from '../ui/theme';
 import { splitHeadline } from './headline';
 import { writeHeadline } from './intro';
 import { mountThemeToggle } from './themeToggle';
 
 applyTheme();
+limitPageTransitions();
 startBackdrop();
 mountThemeToggle(document.querySelector<HTMLButtonElement>('[data-theme-toggle]')!);
 

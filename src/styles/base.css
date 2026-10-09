@@ -67,6 +67,51 @@ h1 {
 }
 
 /*
+ * Between pages: the one you're leaving fades out quickly while the next fades in and rises 6px into place,
+ * done in under 0.3 s. Each page opts in with an inline `@view-transition` naming the `page` type
+ * (scripts/site-meta.ts). In WebKit (src/ui/pageTransition.ts), and where the browser has no cross-document
+ * view transitions, pages just load as before. The type keeps these timings off the home bar's theme cross-fade, which is a view transition too.
+ */
+@keyframes page-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+html:active-view-transition-type(page)::view-transition-old(root) {
+  animation: page-out 120ms ease-in both;
+}
+
+html:active-view-transition-type(page)::view-transition-new(root) {
+  animation: page-in 240ms var(--ease-out) 40ms both;
+}
+
+/*
+ * §4.3: with reduced motion, a 150 ms fade and no rise. The browser's own 250 ms group animation moves
+ * nothing here, but the page takes no clicks until it ends, so it's held to the fade.
+ */
+@media (prefers-reduced-motion: reduce) {
+  html:active-view-transition-type(page)::view-transition-group(root) {
+    animation-duration: 150ms;
+  }
+
+  html:active-view-transition-type(page)::view-transition-old(root) {
+    animation-duration: 100ms;
+  }
+
+  html:active-view-transition-type(page)::view-transition-new(root) {
+    animation: page-out 150ms ease-out reverse both;
+  }
+}
+
+/*
  * Behind every page: a slow wash of light and ink (src/ui/backdrop.ts), fading in over the plain paper once
  * it's ready, and over it the paper's grain, SVG turbulence like the pad's but coarser and stronger. The grain is CSS so it's there
  * from the first paint and wherever WebGL isn't. Both sit under everything and take no clicks. 100lvh, the

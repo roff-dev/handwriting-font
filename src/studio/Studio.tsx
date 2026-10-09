@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { characters } from '../core/project/sets';
 import '../ui/button.css';
 import { startEngine } from './engine';
@@ -12,6 +12,11 @@ import { restore, startAutosave } from './persistence';
 import { useStudio, type Tab } from './store';
 import { WriteTab } from './write/WriteTab';
 import './studio.css';
+
+// A new tab's panel fades in and rises into place, as a new page does (base.css), quick enough not to wait on.
+const PANEL_IN_MS = 240;
+const PANEL_RISE = 'translateY(6px)';
+const PANEL_FADE_MS = 150; // §4.3: with reduced motion, a fade and no rise
 
 const TABS: { id: Tab; label: string }[] = [
   { id: 'write', label: 'Write' },
@@ -52,6 +57,8 @@ export function Studio() {
   const moreOpen = useStudio((s) => s.moreOpen);
   const setMoreOpen = useStudio((s) => s.setMoreOpen);
   const started = useRef(false);
+  const main = useRef<HTMLElement>(null);
+  const shown = useRef(tab);
 
   useEffect(() => {
     if (started.current) return;
@@ -63,6 +70,18 @@ export function Studio() {
       startFontPipeline();
     });
   }, []);
+
+  // Before the frame paints, so the new panel never shows in place first. Arriving at the studio is the page
+  // transition's, so only a change of tab plays this.
+  useLayoutEffect(() => {
+    if (shown.current === tab) return;
+    shown.current = tab;
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    main.current?.animate(reduced ? [{ opacity: 0 }, { opacity: 1 }] : [{ opacity: 0, transform: PANEL_RISE }, { opacity: 1, transform: 'none' }], {
+      duration: reduced ? PANEL_FADE_MS : PANEL_IN_MS,
+      easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)',
+    });
+  }, [tab]);
 
   useEffect(() => {
     if (!toast) return;
@@ -95,7 +114,7 @@ export function Studio() {
         </p>
       )}
 
-      <main className="studio__main" id="main">
+      <main className="studio__main" id="main" ref={main}>
         <h1 className="visually-hidden">Studio</h1>
         <section id="panel-write" role="tabpanel" aria-label="Write" hidden={tab !== 'write'}>
           {tab === 'write' && <WriteTab />}

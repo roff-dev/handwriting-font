@@ -24,6 +24,10 @@ export function siteMeta(siteUrl: string): Plugin {
         '<link rel="apple-touch-icon" href="/apple-touch-icon.png" />',
         '<meta name="theme-color" content="#f4efe6" media="(prefers-color-scheme: light)" />',
         '<meta name="theme-color" content="#151412" media="(prefers-color-scheme: dark)" />',
+        // Pages transition into each other (base.css), though not in WebKit (src/ui/pageTransition.ts). The opt-in
+        // is inline: Chrome checks it as the next page's body arrives, and from the shared stylesheet it was
+        // sometimes too late, so the page cut instead.
+        '<style>@view-transition { navigation: auto; types: page; }</style>',
       ];
       if (PUBLIC_PAGES.includes(path)) {
         tags.push(
