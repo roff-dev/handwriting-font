@@ -208,6 +208,7 @@
 }
 
 .snippet .button {
+  --pad-start: 0px;
   justify-self: start;
   padding-left: 0;
 }

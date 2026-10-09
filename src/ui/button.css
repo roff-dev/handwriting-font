@@ -1,24 +1,46 @@
+/*
+ * Buttons borrow the proofreader's marks, in --proof. A hover (on a touch screen, a press) draws a hand-drawn
+ * loop round a primary, as an editor circles the thing to do, and a squiggle under the label of the rest: red
+ * under a default button, ink under a quiet one. Corners are nearly square, like a tab. The marks are masks,
+ * so they take whatever colour they're given, in either theme.
+ */
 .button {
+  --pad-x: var(--space-5);
+  --mark: var(--proof);
+  --draw: 0.32s;
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: var(--space-2);
   min-height: 44px;
-  padding: 0 var(--space-5);
-  border: 1px solid color-mix(in srgb, var(--ink) 22%, transparent);
-  border-radius: var(--radius-pill);
-  background: transparent;
+  padding: 0 var(--pad-x);
+  border: 1px solid color-mix(in srgb, var(--ink) 30%, transparent);
+  border-radius: 6px;
+  background: var(--sheet);
   color: var(--ink);
   font: inherit;
-  font-weight: 500;
+  font-weight: 600;
   text-decoration: none;
   cursor: pointer;
-  transition: background-color 0.15s, transform 0.12s var(--ease-out), opacity 0.15s;
+  transition: transform 0.12s var(--ease-out), opacity 0.15s;
   -webkit-tap-highlight-color: transparent;
 }
 
-.button:hover {
-  background: color-mix(in srgb, var(--ink) 6%, transparent);
+/* The mark, drawn in from the left: a squiggle under the label (padding inset; --pad-start for an uneven one). */
+.button::after {
+  content: '';
+  position: absolute;
+  left: var(--pad-start, var(--pad-x));
+  right: var(--pad-x);
+  bottom: 7px;
+  height: 6px;
+  background: var(--mark);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 8' preserveAspectRatio='none'%3E%3Cpath d='M1 5 C 12 2, 22 7, 35 4 S 58 2, 72 5 S 92 6, 99 3' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 8' preserveAspectRatio='none'%3E%3Cpath d='M1 5 C 12 2, 22 7, 35 4 S 58 2, 72 5 S 92 6, 99 3' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat;
+  clip-path: inset(0 100% 0 0);
+  pointer-events: none;
+  transition: clip-path var(--draw) var(--ease-out);
 }
 
 .button:active {
@@ -26,18 +48,64 @@
 }
 
 .button--primary {
+  --draw: 0.45s;
   border-color: var(--ink);
   background: var(--ink);
   color: var(--sheet);
 }
 
-.button--primary:hover {
-  background: color-mix(in srgb, var(--ink) 88%, var(--sheet));
+/* The editor's loop: round the whole button, overshooting where it closes, as a pen would. */
+.button--primary::after {
+  inset: -9px -14px -10px -12px;
+  height: auto;
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 242 64' preserveAspectRatio='none'%3E%3Cpath d='M22 34 C 14 16, 70 6, 128 6 S 236 12, 236 30 S 190 58, 118 58 S 8 54, 6 34 S 46 7, 98 5' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 242 64' preserveAspectRatio='none'%3E%3Cpath d='M22 34 C 14 16, 70 6, 128 6 S 236 12, 236 30 S 190 58, 118 58 S 8 54, 6 34 S 46 7, 98 5' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E");
 }
 
 .button--quiet {
+  --pad-x: var(--space-3);
+  --mark: currentColor;
   border-color: transparent;
-  padding: 0 var(--space-3);
+  background: transparent;
+}
+
+@media (hover: hover) {
+  .button:not(:disabled, [aria-disabled='true']):hover::after {
+    clip-path: inset(0);
+  }
+}
+
+/* Touch has no hover: the mark draws on a press and stays a moment after it, so it's seen, without sticking. */
+@media (hover: none) {
+  .button::after {
+    transition: clip-path var(--draw) var(--ease-out) 0.35s;
+  }
+
+  .button:not(:disabled, [aria-disabled='true']):active::after {
+    clip-path: inset(0);
+    transition: clip-path 0.22s var(--ease-out);
+  }
+}
+
+/* Reduced motion: the mark appears rather than being drawn. */
+@media (prefers-reduced-motion: reduce) {
+  .button::after {
+    clip-path: none;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) and (hover: hover) {
+  .button:not(:disabled, [aria-disabled='true']):hover::after {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) and (hover: none) {
+  .button:not(:disabled, [aria-disabled='true']):active::after {
+    opacity: 1;
+  }
 }
 
 .button:disabled,

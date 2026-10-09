@@ -87,7 +87,7 @@
   }
 
   .write__actions .button--quiet {
-    padding: 0 var(--space-2);
+    --pad-x: var(--space-2);
   }
 }
 
