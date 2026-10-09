@@ -32,9 +32,15 @@ export function HomePad({ drawn, onLetter }: Props) {
 
   return (
     <div className="home-pad">
-      <p className="home-pad__prompt" id="home-prompt">
-        Write a lowercase {next}.
-      </p>
+      {/* The headline changing is the point, so say so before the first letter shows it. */}
+      <div className="home-pad__ask">
+        <p className="home-pad__prompt" id="home-prompt">
+          Write a lowercase {next}.
+        </p>
+        <p className="home-pad__hint" id="home-hint">
+          Watch it replace every {next} in the headline.
+        </p>
+      </div>
       <Pad
         strokes={draft}
         pen="fineliner"
@@ -43,7 +49,7 @@ export function HomePad({ drawn, onLetter }: Props) {
         onPen={() => setPenSeen(true)}
         onStroke={(s) => setDraft((d) => [...d, s])}
         label={`Drawing area for a lowercase ${next}`}
-        describedBy="home-prompt"
+        describedBy="home-prompt home-hint"
       />
       <div className="home-pad__actions">
         <button type="button" className="button button--quiet" disabled={!draft.length} onClick={() => setDraft((d) => d.slice(0, -1))}>
