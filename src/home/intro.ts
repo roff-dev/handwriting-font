@@ -1,4 +1,5 @@
 import { GLYPHS, UNITS_PER_EM } from './headlineGlyphs';
+import { landPad } from './landPad';
 
 const SVG = 'http://www.w3.org/2000/svg';
 const TITLE_EM = 5; // ems of the title, read along it, that the writing moves on per second
@@ -40,13 +41,15 @@ function origins(h1: HTMLElement, letters: HTMLElement[]) {
  * round the bowl of an o, up and down the stem of an h, the dot of an i after its stem. Each letter starts
  * as far into the writing as it is along the title, so the writing moves through it at one pace, lines and
  * all, with a few letters in hand at once; each lands in wet ink and dries. Then the rest of the page fades
- * in (home.css). Any key, click, touch, scroll or resize skips to the end. Resolves once the page is showing.
+ * in (home.css) and the pad is laid on the desk (landPad.ts). Any key, click, touch, scroll or resize skips
+ * to the end. Resolves once the page is showing.
  */
 export async function writeHeadline(h1: HTMLElement, letters: HTMLElement[]): Promise<void> {
   const body = document.body;
   const show = () => {
     body.classList.remove('intro-run');
     body.classList.add('intro-done');
+    landPad();
   };
   // Draw over the headline's own face: in a fallback, the drawing wouldn't land on the letters.
   const face = '1em "Instrument Serif"';

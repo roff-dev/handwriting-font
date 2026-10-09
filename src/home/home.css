@@ -82,6 +82,12 @@
   color: transparent;
 }
 
+/* The pad's guides rule themselves in from the left as it lands (landPad.ts). */
+.hero__pad .pad__guide {
+  transform-box: fill-box;
+  transform-origin: 0 50%;
+}
+
 .hero__ink {
   position: absolute;
   top: 0;
