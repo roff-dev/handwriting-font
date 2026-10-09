@@ -25,15 +25,53 @@
   padding: max(var(--space-3), env(safe-area-inset-top)) var(--gutter) var(--space-3);
 }
 
+/* On a phone, with the theme switch beside the studio link, the name sets as two balanced lines. */
 .home__brand {
   color: var(--ink);
   font-family: var(--font-display);
-  font-size: 1.35rem;
+  font-size: clamp(1.1rem, 0.6rem + 2.4vw, 1.35rem);
+  line-height: 1.05;
   text-decoration: none;
+  text-wrap: balance;
+}
+
+.home__links {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+/* Paper or the night desk: a half-inked circle that turns over when the theme does. */
+.home__theme {
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  transition: background-color 0.15s var(--ease-out);
+}
+
+.home__theme:hover {
+  background: color-mix(in srgb, var(--ink) 8%, transparent);
+}
+
+.home__theme svg {
+  transition: rotate 0.45s var(--ease-out);
+}
+
+.home__theme[aria-pressed='true'] svg {
+  rotate: 180deg;
 }
 
 .home__studio {
   display: inline-flex;
+  white-space: nowrap;
   align-items: center;
   min-height: 44px;
   color: var(--ink);
