@@ -3,7 +3,7 @@ import { backdropHeld } from './backdrop';
 
 // Paper Shaders' Mesh Gradient (shaders.paper.design, Apache-2.0): spots of colour that drift and bleed
 // into each other, like washes soaking into paper.
-const SPEED = 0.07; // of real time: slow enough that a wash takes most of a minute to cross the page
+const SPEED = 0.1; // of real time: slow enough that a wash takes the best part of a minute to cross the page
 const FPS = 30; // the drift is slow enough that 30 frames a second look the same as 60, for half the work
 // Only soft washes are drawn here (the grain is CSS, in base.css), so a few pixels stretched over the screen look
 // the same as a full set, for a fraction of the work.
