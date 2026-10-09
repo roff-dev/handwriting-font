@@ -7,3 +7,10 @@ playwright-report
 tmp
 docs/spec.md
 docs/snippets.md
+
+# Development only: kept locally, not part of the public repo
+tests
+playwright.config.ts
+eslint.config.js
+scripts/*
+!scripts/site-meta.ts
