@@ -17,7 +17,9 @@ export function HomePad({ drawn, onLetter }: Props) {
     return (
       <div className="home-pad home-pad--done">
         <p className="home-pad__prompt">That's every letter in the headline.</p>
-        <p className="home-pad__hint">The rest of your font is waiting in the studio.</p>
+        <p className="home-pad__hint">
+          The rest of your font is waiting in the <a href="/studio/">studio</a>.
+        </p>
       </div>
     );
   }
