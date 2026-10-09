@@ -3,27 +3,23 @@ import { createRoot } from 'react-dom/client';
 import type { Stroke } from '../core/ink/strokes';
 import { emptyProject } from '../core/project/schema';
 import { loadProject, saveProject } from '../ui/projectDb';
-import { startBackdrop } from '../ui/backdrop';
-import { applyTheme } from '../ui/theme';
 import { HandFont } from './handFont';
-import { applyHand, splitHeadline } from './headline';
+import { applyHand } from './headline';
 import { HOME_LETTERS, HomePad } from './HomePad';
 
-applyTheme();
-startBackdrop();
-
 const CTA_AFTER = 3;
-const letters = splitHeadline(document.getElementById('headline')!);
 const font = new HandFont();
 
 function updateCta(count: number) {
   for (const cta of document.querySelectorAll<HTMLElement>('[data-cta]')) cta.textContent = count >= CTA_AFTER ? 'Make the whole font' : 'Start writing';
 }
 
-function Home() {
+type Props = { letters: HTMLElement[]; intro: Promise<void> };
+
+function Home({ letters, intro }: Props) {
   const [drawn, setDrawn] = useState<Set<string>>(new Set());
 
-  // A returning visitor's letters are already in the headline when they arrive.
+  // A returning visitor's letters ink into the headline once it has finished writing itself.
   useEffect(() => {
     let cancelled = false;
     loadProject()
@@ -34,8 +30,9 @@ function Home() {
         });
         if (!mine.length || cancelled) return;
         const family = await font.add(mine);
+        await intro;
         if (cancelled) return;
-        applyHand(letters, family, font.drawn, new Set());
+        applyHand(letters, family, font.drawn, font.drawn);
         setDrawn(font.drawn);
         updateCta(font.drawn.size);
       })
@@ -45,7 +42,7 @@ function Home() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [letters, intro]);
 
   const onLetter = async (ch: string, strokes: Stroke[]) => {
     setDrawn((d) => new Set([...d, ch]));
@@ -64,8 +61,10 @@ function Home() {
   return <HomePad drawn={drawn} onLetter={onLetter} />;
 }
 
-createRoot(document.getElementById('home-pad')!).render(
-  <StrictMode>
-    <Home />
-  </StrictMode>,
-);
+export function mountHome(letters: HTMLElement[], intro: Promise<void>) {
+  createRoot(document.getElementById('home-pad')!).render(
+    <StrictMode>
+      <Home letters={letters} intro={intro} />
+    </StrictMode>,
+  );
+}

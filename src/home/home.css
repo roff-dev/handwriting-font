@@ -48,8 +48,46 @@
 }
 
 .hero__title {
+  position: relative;
   max-width: 11ch;
   text-wrap: balance;
+}
+
+/*
+ * The headline writes itself before anything else appears (intro.ts). Until the script takes over, the page
+ * waits blank; if it never does, everything shows after a moment anyway. While it writes, the letters are
+ * drawn on a sheet laid exactly over the text, and the text itself waits invisible underneath.
+ */
+.home:not(.intro-run, .intro-done) .hero__title,
+.home:not(.intro-done) :is(.home__bar, .hero__sub, .hero__cta, .hero__desk, .steps, .cta-bar, .site-footer) {
+  opacity: 0;
+  animation: intro-fallback 0s 2.5s forwards;
+}
+
+.home.intro-run :is(.home__bar, .hero__sub, .hero__cta, .hero__desk, .steps, .cta-bar, .site-footer) {
+  animation: none;
+}
+
+.home.intro-done :is(.home__bar, .hero__sub, .hero__cta, .hero__desk, .steps, .cta-bar, .site-footer) {
+  transition: opacity 0.6s var(--ease-out);
+}
+
+@keyframes intro-fallback {
+  to {
+    opacity: 1;
+  }
+}
+
+.hero__title--drawing .hero__letter {
+  color: transparent;
+}
+
+.hero__ink {
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: visible;
+  pointer-events: none;
 }
 
 .hero__letter--hand {
