@@ -179,6 +179,30 @@
   color: var(--ink);
   overflow-y: auto;
   overscroll-behavior: contain;
+  /* A thin scrollbar in the sheet's own ink, so the one that's left belongs to the paper. */
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--ink) 28%, transparent) transparent;
+}
+
+/*
+ * While the sheet is open the page behind it holds still, so the sheet's is the only scrollbar. The page keeps
+ * the width its scrollbar took (--scrollbar, measured by MoreSheet as it opens), so nothing behind the sheet
+ * moves, then or when it closes.
+ */
+html:has(.sheet[open]) {
+  overflow: hidden;
+}
+
+html:has(.sheet[open]) body {
+  padding-right: var(--scrollbar, 0px);
+}
+
+html:has(.sheet[open]) .studio__tabs--bottom {
+  padding-right: calc(var(--space-4) + var(--scrollbar, 0px));
+}
+
+html:has(.sheet[open]) .studio__toast {
+  left: calc(50% - var(--scrollbar, 0px) / 2);
 }
 
 .sheet::backdrop {

@@ -31,7 +31,11 @@ export function MoreSheet({ open, onClose }: { open: boolean; onClose: () => voi
     const axis = matchMedia('(min-width: 700px)').matches ? 'x' : 'y';
     // Reopened mid-exit, it turns back from where it is; from closed, it starts off screen (as the CSS has it).
     const fresh = !d.open;
-    if (open && fresh) d.showModal();
+    if (open && fresh) {
+      // The page's scrollbar width, taken before the open sheet locks the page (studio.css), which pads for it.
+      document.documentElement.style.setProperty('--scrollbar', `${innerWidth - document.documentElement.clientWidth}px`);
+      d.showModal();
+    }
     const panel = reduced
       ? animate(d, { [axis]: '0%', opacity: open ? [fresh ? 0 : null, 1] : 0 }, { duration: 0.15, [axis]: { duration: 0 } })
       : open
