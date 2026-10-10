@@ -1,7 +1,11 @@
 import { animate } from 'motion';
 import { useEffect, useRef, useState } from 'react';
+import { emptyProject } from '../core/project/schema';
 import { LOWERCASE, MAX_PAIRS, UPPERCASE, type SetId } from '../core/project/sets';
+import { saveProject } from '../ui/projectDb';
 import { useTheme, type ThemeChoice } from '../ui/theme';
+import { download, makeFile } from './export/files';
+import { clearLiveFont } from './font';
 import { useStudio } from './store';
 
 const OPTIONAL: { id: SetId; title: string; detail: string }[] = [
@@ -17,6 +21,9 @@ export function MoreSheet({ open, onClose }: { open: boolean; onClose: () => voi
   const setSettings = useStudio((s) => s.setSettings);
   const addPair = useStudio((s) => s.addPair);
   const setTab = useStudio((s) => s.setTab);
+  const replaceProject = useStudio((s) => s.replaceProject);
+  const setStorage = useStudio((s) => s.setStorage);
+  const confirmReset = useRef<HTMLDialogElement>(null);
   const [first, setFirst] = useState('t');
   const [second, setSecond] = useState('h');
   const [pairError, setPairError] = useState('');
@@ -63,95 +70,140 @@ export function MoreSheet({ open, onClose }: { open: boolean; onClose: () => voi
     onClose();
   };
 
+  const saveFirst = async () => {
+    const { blob, name } = await makeFile('project');
+    download(blob, name);
+  };
+
+  const startOver = () => {
+    const fresh = emptyProject();
+    replaceProject(fresh);
+    clearLiveFont();
+    setTab('write');
+    // Saved now rather than by the autosave half a second later, so closing the tab straight away can't
+    // bring the old letters back.
+    saveProject(fresh).catch(() => setStorage('unavailable'));
+    confirmReset.current?.close();
+    onClose();
+  };
+
   return (
-    <dialog
-      ref={dialog}
-      className="sheet"
-      aria-labelledby="more-title"
-      onClose={onClose}
-      onCancel={(e) => {
-        // Escape closes through the same exit animation as Done and the backdrop.
-        e.preventDefault();
-        onClose();
-      }}
-      onClick={(e) => e.target === dialog.current && onClose()}
-    >
-      <div className="sheet__body">
-        <div className="sheet__head">
-          <h2 id="more-title">More characters</h2>
-          <button type="button" className="button button--quiet" onClick={onClose}>
-            Done
-          </button>
-        </div>
-
-        <ul className="sheet__options">
-          {OPTIONAL.map((o) => (
-            <li key={o.id}>
-              <label className="option">
-                <input type="checkbox" checked={sets.includes(o.id)} onChange={(e) => toggle(o.id, e.target.checked)} />
-                <span>
-                  <span className="option__title">{o.title}</span>
-                  <span className="option__detail">{o.detail}</span>
-                </span>
-              </label>
-            </li>
-          ))}
-        </ul>
-
-        <fieldset className="sheet__pair">
-          <legend>Add your own pair</legend>
-          <div className="sheet__pair-row">
-            <label className="sheet__select">
-              <span className="visually-hidden">First letter</span>
-              <select value={first} onChange={(e) => setFirst(e.target.value)}>
-                {[...LOWERCASE, ...UPPERCASE].map((c) => <option key={c}>{c}</option>)}
-              </select>
-            </label>
-            <label className="sheet__select">
-              <span className="visually-hidden">Second letter</span>
-              <select value={second} onChange={(e) => setSecond(e.target.value)}>
-                {LOWERCASE.map((c) => <option key={c}>{c}</option>)}
-              </select>
-            </label>
-            <button type="button" className="button" onClick={add} aria-describedby="pair-error">
-              Add {first + second}
+    <>
+      <dialog
+        ref={dialog}
+        className="sheet"
+        aria-labelledby="more-title"
+        onClose={onClose}
+        onCancel={(e) => {
+          // Escape closes through the same exit animation as Done and the backdrop.
+          e.preventDefault();
+          onClose();
+        }}
+        onClick={(e) => e.target === dialog.current && onClose()}
+      >
+        <div className="sheet__body">
+          <div className="sheet__head">
+            <h2 id="more-title">More characters</h2>
+            <button type="button" className="button button--quiet" onClick={onClose}>
+              Done
             </button>
           </div>
-          <p className="sheet__error" id="pair-error" aria-live="polite">{pairError}</p>
-          <p className="sheet__note">Doubled letters work well too: ll, ss, ee, oo, tt.</p>
-        </fieldset>
 
-        <div className="sheet__paper">
-          <p className="option__title">Prefer paper?</p>
-          <p className="option__detail">Print a template, fill it in with a pen and take a photo of each page.</p>
-          <button
-            type="button"
-            className="button"
-            onClick={() => {
-              setTab('paper');
-              onClose();
-            }}
-          >
-            Import from paper
+          <ul className="sheet__options">
+            {OPTIONAL.map((o) => (
+              <li key={o.id}>
+                <label className="option">
+                  <input type="checkbox" checked={sets.includes(o.id)} onChange={(e) => toggle(o.id, e.target.checked)} />
+                  <span>
+                    <span className="option__title">{o.title}</span>
+                    <span className="option__detail">{o.detail}</span>
+                  </span>
+                </label>
+              </li>
+            ))}
+          </ul>
+
+          <fieldset className="sheet__pair">
+            <legend>Add your own pair</legend>
+            <div className="sheet__pair-row">
+              <label className="sheet__select">
+                <span className="visually-hidden">First letter</span>
+                <select value={first} onChange={(e) => setFirst(e.target.value)}>
+                  {[...LOWERCASE, ...UPPERCASE].map((c) => <option key={c}>{c}</option>)}
+                </select>
+              </label>
+              <label className="sheet__select">
+                <span className="visually-hidden">Second letter</span>
+                <select value={second} onChange={(e) => setSecond(e.target.value)}>
+                  {LOWERCASE.map((c) => <option key={c}>{c}</option>)}
+                </select>
+              </label>
+              <button type="button" className="button" onClick={add} aria-describedby="pair-error">
+                Add {first + second}
+              </button>
+            </div>
+            <p className="sheet__error" id="pair-error" aria-live="polite">{pairError}</p>
+            <p className="sheet__note">Doubled letters work well too: ll, ss, ee, oo, tt.</p>
+          </fieldset>
+
+          <div className="sheet__paper">
+            <p className="option__title">Prefer paper?</p>
+            <p className="option__detail">Print a template, fill it in with a pen and take a photo of each page.</p>
+            <button
+              type="button"
+              className="button"
+              onClick={() => {
+                setTab('paper');
+                onClose();
+              }}
+            >
+              Import from paper
+            </button>
+          </div>
+
+          <nav className="sheet__links" aria-label="About this site">
+            <a href="/privacy/">Privacy</a>
+            <a href="/terms/">Terms</a>
+            <a href={import.meta.env.VITE_PORTFOLIO_URL}>Built by Kieron</a>
+          </nav>
+
+          <fieldset className="sheet__theme">
+            <legend>Appearance</legend>
+            {(['system', 'light', 'dark'] as ThemeChoice[]).map((t) => (
+              <label key={t}>
+                <input type="radio" name="theme" value={t} checked={theme === t} onChange={() => setTheme(t)} />
+                {t === 'system' ? 'Match this device' : t === 'light' ? 'Paper' : 'Night desk'}
+              </label>
+            ))}
+          </fieldset>
+
+          <div className="sheet__reset">
+            <p className="option__title">Start a new font</p>
+            <p className="option__detail">Deletes your letters and settings from this browser.</p>
+            <button type="button" className="button" onClick={() => confirmReset.current?.showModal()}>
+              Start a new font…
+            </button>
+          </div>
+        </div>
+      </dialog>
+
+      {/* Beside the sheet, not inside it: React passes a dialog's close and cancel up to its parents, so
+          closing this one inside the sheet would close the sheet too. */}
+      <dialog ref={confirmReset} className="confirm" aria-labelledby="reset-title">
+        <h2 id="reset-title">Start a new font?</h2>
+        <p>This deletes “{project.name}”, every letter you've drawn and its settings, from this browser. It can't be undone, so save a project file first if you might want it back.</p>
+        <div className="row__files">
+          <button type="button" className="button" onClick={saveFirst}>
+            Save project file
+          </button>
+          <button type="button" className="button button--primary" onClick={startOver}>
+            Delete and start again
+          </button>
+          <button type="button" className="button" onClick={() => confirmReset.current?.close()}>
+            Cancel
           </button>
         </div>
-
-        <nav className="sheet__links" aria-label="About this site">
-          <a href="/privacy/">Privacy</a>
-          <a href="/terms/">Terms</a>
-          <a href={import.meta.env.VITE_PORTFOLIO_URL}>Built by Kieron</a>
-        </nav>
-
-        <fieldset className="sheet__theme">
-          <legend>Appearance</legend>
-          {(['system', 'light', 'dark'] as ThemeChoice[]).map((t) => (
-            <label key={t}>
-              <input type="radio" name="theme" value={t} checked={theme === t} onChange={() => setTheme(t)} />
-              {t === 'system' ? 'Match this device' : t === 'light' ? 'Paper' : 'Night desk'}
-            </label>
-          ))}
-        </fieldset>
-      </div>
-    </dialog>
+      </dialog>
+    </>
   );
 }

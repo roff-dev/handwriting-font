@@ -130,6 +130,15 @@ export async function freshFont(): Promise<boolean> {
   return rebuild();
 }
 
+/** Drop the live font for a fresh start: build() leaves the last one up when nothing is drawn. */
+export function clearLiveFont() {
+  generation++; // a build already in flight is discarded when it lands
+  if (previous) document.fonts.delete(previous);
+  previous = null;
+  builtFrom = null;
+  useLiveFont.setState(useLiveFont.getInitialState());
+}
+
 /** Rebuild the live font shortly after drawings, outlines or settings change. The old font stays up meanwhile. */
 export function startFontPipeline() {
   const schedule = () => {
