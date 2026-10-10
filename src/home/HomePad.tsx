@@ -38,7 +38,7 @@ export function HomePad({ drawn, onLetter }: Props) {
           Write a lowercase {next}.
         </p>
         <p className="home-pad__hint" id="home-hint">
-          Watch it replace every {next} in the headline.
+          It replaces every {next} in the headline.
         </p>
       </div>
       <Pad
